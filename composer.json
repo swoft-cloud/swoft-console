@@ -1,5 +1,5 @@
 {
-  "name": "swoft/view",
+  "name": "swoft/console",
   "type": "library",
   "keywords": ["php", "swoole", "swoft","view"],
   "description": "microservice framework base on swoole",
