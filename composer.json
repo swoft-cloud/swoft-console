@@ -19,7 +19,7 @@
     "classmap": [
     ],
     "psr-4": {
-      "Swoft\\View\\":"src/"
+      "Swoft\\Console\\":"src/"
     },
     "files": [
       "src/Helper/Functions.php"
