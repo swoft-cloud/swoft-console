@@ -42,9 +42,9 @@ class Console implements ConsoleInterface
     /**
      * get id of console
      *
-     * @return int
+     * @return int|null
      */
-    public static function id(): int
+    public static function id()
     {
         return self::$id;
     }
