@@ -2,15 +2,6 @@
 
 namespace Swoft\Console\Helper;
 
-/**
- * the helper of command
- *
- * @uses      CommandHelper
- * @version   2018年01月23日
- * @author    stelin <phpcrazy@126.com>
- * @copyright Copyright 2010-2016 swoft software
- * @license   PHP Version 7.x {@link http://www.php.net/license/3_0.txt}
- */
 class CommandHelper
 {
     /**
@@ -29,7 +20,6 @@ class CommandHelper
      * @param array $params
      * @param array $noValues
      * @param bool  $mergeOpts
-     *
      * @return array
      */
     public static function parse(array $params, array $noValues = [], $mergeOpts = false): array
@@ -44,13 +34,13 @@ class CommandHelper
             // is options
             if ($p{0} === '-') {
                 $isLong = false;
-                $opt    = substr($p, 1);
-                $value  = true;
+                $opt = substr($p, 1);
+                $value = true;
 
                 // long-opt: (--<opt>)
                 if ($opt{0} === '-') {
                     $isLong = true;
-                    $opt    = substr($opt, 1);
+                    $opt = substr($opt, 1);
 
                     // long-opt: value specified inline (--<opt>=<value>)
                     if (strpos($opt, '=') !== false) {
@@ -66,15 +56,13 @@ class CommandHelper
                 $nxp = current($params);
 
                 // fix: allow empty string ''
-                if ($value === true && $nxp !== false && (!$nxp || $nxp{0} !== '-')
-                    && !\in_array($opt, $noValues, true)
-                ) {
+                if ($value === true && $nxp !== false && (! $nxp || $nxp{0} !== '-') && ! \in_array($opt, $noValues, true)) {
                     // list(,$value) = each($params);
                     $value = current($params);
                     next($params);
 
                     // short-opt: bool opts. like -e -abc
-                } elseif (!$isLong && $value === true) {
+                } elseif (! $isLong && $value === true) {
                     foreach (str_split($opt) as $char) {
                         $sOpts[$char] = true;
                     }
@@ -112,13 +100,12 @@ class CommandHelper
      *
      * @param mixed $val    值
      * @param bool  $enable 是否启用
-     *
      * @return bool
      */
-    private static function filterBool($val, $enable = true)
+    private static function filterBool($val, $enable = true): bool
     {
         if ($enable) {
-            if (is_bool($val) || is_numeric($val)) {
+            if (\is_bool($val) || is_numeric($val)) {
                 return $val;
             }
 

@@ -6,27 +6,20 @@ use Swoft\Bean\Annotation\Bean;
 use Swoft\Router\HandlerMappingInterface;
 
 /**
- * the mapping of handler
- *
+ * The mapping of handler
  * @Bean("commandRoute")
- * @uses      HandlerMapping
- * @version   2018年01月22日
- * @author    stelin <phpcrazy@126.com>
- * @copyright Copyright 2010-2016 swoft software
- * @license   PHP Version 7.x {@link http://www.php.net/license/3_0.txt}
  */
 class HandlerMapping implements HandlerMappingInterface
 {
     /**
      * default commands
      */
-    const DEFAULT_METHODS
-        = [
-            'start',
-            'reload',
-            'stop',
-            'restart',
-        ];
+    const DEFAULT_METHODS = [
+        'start',
+        'reload',
+        'stop',
+        'restart',
+    ];
 
     /**
      * @var string
@@ -41,7 +34,7 @@ class HandlerMapping implements HandlerMappingInterface
     /**
      * the default command
      */
-    private $deaultCommand = "index";
+    private $deaultCommand = 'index';
 
     /**
      * the delimiter
@@ -58,60 +51,59 @@ class HandlerMapping implements HandlerMappingInterface
 
     /**
      * @param array ...$params
-     *
      * @return mixed
+     * @throws \InvalidArgumentException
      */
     public function getHandler(...$params)
     {
         list($group, $command) = $this->getGroupAndCommand();
-        $route = $this->getComamndString($group, $command);
+        $route = $this->getCommandString($group, $command);
 
         return $this->match($route);
     }
 
     /**
-     * auto register routes
+     * Auto register routes
      *
      * @param array $commandMapping
      */
     public function register(array $commandMapping)
     {
         foreach ($commandMapping as $className => $mapping) {
-            $prefix    = $mapping['name'];
-            $routes    = $mapping['routes'];
+            $prefix = $mapping['name'];
+            $routes = $mapping['routes'];
             $coroutine = $mapping['coroutine'];
-            $server    = $mapping['server'];
-            $prefix    = $this->getPrefix($prefix, $className);
+            $server = $mapping['server'];
+            $prefix = $this->getPrefix($prefix, $className);
             $this->registerRoute($className, $routes, $prefix, $coroutine, $server);
         }
     }
 
     /**
      * @param string $comamnd
-     *
      * @return bool
      */
-    public function isDefaultCommand(string $comamnd)
+    public function isDefaultCommand(string $comamnd): bool
     {
-        return $comamnd == $this->deaultCommand;
+        return $comamnd === $this->deaultCommand;
     }
 
     /**
      * @return array
      */
-    private function getGroupAndCommand()
+    private function getGroupAndCommand(): array
     {
         $cmd = input()->getCommand();
-        if (in_array($cmd, self::DEFAULT_METHODS, true)) {
+        if (\in_array($cmd, self::DEFAULT_METHODS, true)) {
             return [$this->defaultGroup, $cmd];
         }
 
         $commandAry = explode($this->delimiter, $cmd);
-        if (count($commandAry) >= 2) {
+        if (\count($commandAry) >= 2) {
             list($group, $command) = $commandAry;
         } else {
             list($group) = $commandAry;
-            $command = "";
+            $command = '';
         }
 
         if (empty($group)) {
@@ -126,15 +118,15 @@ class HandlerMapping implements HandlerMappingInterface
     }
 
     /**
-     * match route
+     * Match route
      *
      * @param $route
-     *
      * @return mixed
+     * @throws \InvalidArgumentException
      */
     private function match($route)
     {
-        if (!isset($this->routes[$route])) {
+        if (! isset($this->routes[$route])) {
             throw new \InvalidArgumentException('the func of command is not exist，command=' . $route);
         }
 
@@ -142,7 +134,7 @@ class HandlerMapping implements HandlerMappingInterface
     }
 
     /**
-     * register one route
+     * Register one route
      *
      * @param string $className
      * @param array  $routes
@@ -159,31 +151,30 @@ class HandlerMapping implements HandlerMappingInterface
                 $mappedName = $methodName;
             }
 
-            $commandKey                = $this->getComamndString($prefix, $mappedName);
+            $commandKey = $this->getCommandString($prefix, $mappedName);
             $this->routes[$commandKey] = [$className, $methodName, $coroutine, $server];
         }
 
-        $commandKey                = $this->getComamndString($prefix, $this->deaultCommand);
+        $commandKey = $this->getCommandString($prefix, $this->deaultCommand);
         $this->routes[$commandKey] = [$className, $this->deaultCommand];
     }
 
     /**
-     * get command from class name
+     * Get command from class name
      *
      * @param string $prefix
      * @param string $className
-     *
      * @return string
      */
-    public function getPrefix(string $prefix, string $className)
+    public function getPrefix(string $prefix, string $className): string
     {
         // the  prefix of annotation is exist
-        if (!empty($prefix)) {
+        if (! empty($prefix)) {
             return $prefix;
         }
 
         // the prefix of annotation is empty
-        $reg    = '/^.*\\\(\w+)' . $this->suffix . '$/';
+        $reg = '/^.*\\\(\w+)' . $this->suffix . '$/';
         $prefix = '';
 
         if ($result = preg_match($reg, $className, $match)) {
@@ -196,10 +187,9 @@ class HandlerMapping implements HandlerMappingInterface
     /**
      * @param string $group
      * @param string $command
-     *
      * @return string
      */
-    private function getComamndString(string $group, string $command)
+    private function getCommandString(string $group, string $command): string
     {
         return sprintf('%s%s%s', $group, $this->delimiter, $command);
     }

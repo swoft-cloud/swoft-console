@@ -4,11 +4,6 @@ namespace Swoft\Console\Input;
 
 /**
  * 输入接口
- * @uses      InputInterface
- * @version   2017年10月06日
- * @author    stelin <phpcrazy@126.com>
- * @copyright Copyright 2010-2016 swoft software
- * @license   PHP Version 7.x {@link http://www.php.net/license/3_0.txt}
  */
 interface InputInterface
 {
@@ -17,7 +12,6 @@ interface InputInterface
      *
      * @param  string $question 若不为空，则先输出文本消息
      * @param  bool   $nl       true 会添加换行符 false 原样输出，不添加换行符
-     *
      * @return string
      */
     public function read($question = null, $nl = false): string;
@@ -33,7 +27,6 @@ interface InputInterface
      * 获取执行的命令
      *
      * @param string $default
-     *
      * @return string
      */
     public function getCommand($default = ''): string;
@@ -50,7 +43,6 @@ interface InputInterface
      *
      * @param null|int|string $name
      * @param mixed           $default
-     *
      * @return mixed
      */
     public function getArg($name, $default = null);
@@ -67,7 +59,6 @@ interface InputInterface
      *
      * @param string $name
      * @param null   $default
-     *
      * @return bool|mixed|null
      */
     public function getOpt(string $name, $default = null);

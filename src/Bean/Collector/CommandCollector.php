@@ -7,13 +7,7 @@ use Swoft\Console\Bean\Annotation\Command;
 use Swoft\Console\Bean\Annotation\Mapping;
 
 /**
- * the collector of command
- *
- * @uses      CommandCollector
- * @version   2018年01月22日
- * @author    stelin <phpcrazy@126.com>
- * @copyright Copyright 2010-2016 swoft software
- * @license   PHP Version 7.x {@link http://www.php.net/license/3_0.txt}
+ * Command Collector
  */
 class CommandCollector implements CollectorInterface
 {
@@ -31,13 +25,18 @@ class CommandCollector implements CollectorInterface
      * @param string $methodName
      * @param null   $propertyValue
      */
-    public static function collect(string $className, $objectAnnotation = null, string $propertyName = "", string $methodName = "", $propertyValue = null)
-    {
+    public static function collect(
+        string $className,
+        $objectAnnotation = null,
+        string $propertyName = '',
+        string $methodName = '',
+        $propertyValue = null
+    ) {
         if ($objectAnnotation instanceof Command) {
             self::collectCommand($className, $objectAnnotation);
         } elseif ($objectAnnotation instanceof Mapping) {
             self::collectMapping($className, $objectAnnotation, $methodName);
-        } elseif ($objectAnnotation == null && isset(self::$commandMapping[$className])) {
+        } elseif ($objectAnnotation === null && isset(self::$commandMapping[$className])) {
             self::collectWithoutAnnotation($className, $methodName);
         }
     }
@@ -51,12 +50,12 @@ class CommandCollector implements CollectorInterface
     private static function collectCommand(string $className, Command $objectAnnotation)
     {
         $commandName = $objectAnnotation->getName();
-        $coroutine   = $objectAnnotation->isCoroutine();
-        $server      = $objectAnnotation->isServer();
+        $coroutine = $objectAnnotation->isCoroutine();
+        $server = $objectAnnotation->isServer();
 
-        self::$commandMapping[$className]['name']      = $commandName;
+        self::$commandMapping[$className]['name'] = $commandName;
         self::$commandMapping[$className]['coroutine'] = $coroutine;
-        self::$commandMapping[$className]['server']    = $server;
+        self::$commandMapping[$className]['server'] = $server;
     }
 
     /**
@@ -83,7 +82,7 @@ class CommandCollector implements CollectorInterface
     private static function collectWithoutAnnotation(string $className, string $methodName)
     {
         self::$commandMapping[$className]['routes'][] = [
-            'mappedName' => "",
+            'mappedName' => '',
             'methodName' => $methodName,
         ];
     }
@@ -91,7 +90,7 @@ class CommandCollector implements CollectorInterface
     /**
      * @return array
      */
-    public static function getCollector()
+    public static function getCollector(): array
     {
         return self::$commandMapping;
     }

@@ -4,22 +4,13 @@ namespace Swoft\Console;
 
 use Swoft\App;
 use Swoft\Console\Bean\Collector\CommandCollector;
-use Swoft\Console\Style\Style;
 
 /**
- * 命令行
- *
- * @uses      Application
- * @version   2017年10月06日
- * @author    stelin <phpcrazy@126.com>
- * @copyright Copyright 2010-2016 swoft software
- * @license   PHP Version 7.x {@link http://www.php.net/license/3_0.txt}
+ * Console
  */
 class Console implements ConsoleInterface
 {
     /**
-     * the id of console
-     *
      * @var int
      */
     private static $id;
@@ -34,7 +25,7 @@ class Console implements ConsoleInterface
     }
 
     /**
-     * run command
+     * @return void
      */
     public function run()
     {
@@ -53,21 +44,23 @@ class Console implements ConsoleInterface
      *
      * @return int
      */
-    public static function id()
+    public static function id(): int
     {
         return self::$id;
     }
 
     /**
-     * init
+     * @return void
      */
     private function init()
     {
-        self::$id = uniqid();
+        self::$id = uniqid('', true);
     }
 
     /**
-     * register mapping
+     * Register mapping
+     *
+     * @return void
      */
     private function registerMapping()
     {

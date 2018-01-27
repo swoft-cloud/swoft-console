@@ -1,12 +1,10 @@
 <?php
 
-namespace Swoft\Console\Test\Cases;
+namespace SwoftTest\Console;
 
 use PHPUnit\Framework\TestCase;
 
 /**
- *
- *
  * @uses      DemoTest
  * @version   2018年01月27日
  * @author    stelin <phpcrazy@126.com>

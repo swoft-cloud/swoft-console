@@ -3,17 +3,10 @@
 namespace Swoft\Console\Output;
 
 use Swoft\Bean\Annotation\Bean;
-use Swoft\Console\Style\Style;
 
 /**
  * 输出
- *
  * @Bean()
- * @uses      OutputInterface
- * @version   2017年10月06日
- * @author    stelin <phpcrazy@126.com>
- * @copyright Copyright 2010-2016 swoft software
- * @license   PHP Version 7.x {@link http://www.php.net/license/3_0.txt}
  */
 class Output implements OutputInterface
 {
@@ -31,9 +24,8 @@ class Output implements OutputInterface
      * 输出一行数据
      *
      * @param string $messages 信息
-     * @param bool $newline 是否换行
-     * @param bool $quit 是否退出
-     *
+     * @param bool   $newline  是否换行
+     * @param bool   $quit     是否退出
      */
     public function writeln($messages = '', $newline = true, $quit = false)
     {
@@ -70,10 +62,10 @@ class Output implements OutputInterface
     /**
      * 输出一个列表
      *
-     * @param array $list 列表数据
-     * @param string $titleStyle 标题样式
-     * @param string $cmdStyle 命令样式
-     * @param string|null $descStyle 描述样式
+     * @param array       $list       列表数据
+     * @param string      $titleStyle 标题样式
+     * @param string      $cmdStyle   命令样式
+     * @param string|null $descStyle  描述样式
      */
     public function writeList(array $list, $titleStyle = 'comment', string $cmdStyle = 'info', string $descStyle = null)
     {
@@ -91,7 +83,7 @@ class Output implements OutputInterface
     /**
      * 显示命令列表一块数据
      *
-     * @param array $items 数据
+     * @param array  $items    数据
      * @param string $cmdStyle 命令样式
      */
     private function writeItems(array $items, string $cmdStyle)
@@ -118,10 +110,9 @@ class Output implements OutputInterface
      * 所有命令最大宽度
      *
      * @param array $commands 所有命令
-     *
      * @return int
      */
-    private function getCmdMaxLength(array $commands)
+    private function getCmdMaxLength(array $commands): int
     {
         $max = 0;
 

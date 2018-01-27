@@ -5,14 +5,8 @@ namespace Swoft\Console\Style;
 use Swoft\Bean\Annotation\Bean;
 
 /**
- * the style of command
- *
+ * The style of command
  * @Bean()
- * @uses      Style
- * @version   2017年10月08日
- * @author    stelin <phpcrazy@126.com>
- * @copyright Copyright 2010-2016 swoft software
- * @license   PHP Version 7.x {@link http://www.php.net/license/3_0.txt}
  */
 class Style
 {
@@ -56,6 +50,8 @@ class Style
 
     /**
      * 初始化颜色标签
+     *
+     * @throws \InvalidArgumentException
      */
     public function init()
     {
@@ -84,19 +80,18 @@ class Style
      * 颜色翻译
      *
      * @param string $message 文字
-     *
      * @return mixed|string
      */
     public function t(string $message)
     {
         // 不支持颜色，移除颜色标签
-        if (!$this->isSupportColor()) {
-            return static::stripColor($message);
+        if (! $this->isSupportColor()) {
+            return $this->stripColor($message);
         }
 
         $isMatch = preg_match_all(self::TAGS_REG, $message, $matches);
         // 未匹配颜色标签
-        if ($isMatch == false) {
+        if ($isMatch === false) {
             return $message;
         }
 
@@ -116,6 +111,7 @@ class Style
      * @param string $fg      前景色
      * @param string $bg      背景色
      * @param array  $options 颜色选项
+     * @throws \InvalidArgumentException
      */
     public function addTag(string $name, string $fg = '', string $bg = '', array $options = [])
     {
@@ -140,7 +136,6 @@ class Style
      * @param string $tag
      * @param string $match
      * @param string $style
-     *
      * @return string
      */
     private function replaceColor(string $text, string $tag, string $match, string $style): string
@@ -153,7 +148,6 @@ class Style
      * 移除颜色标签
      *
      * @param string $message
-     *
      * @return mixed
      */
     private function stripColor(string $message)
@@ -166,7 +160,7 @@ class Style
      *
      * @return bool
      */
-    private function isSupportColor()
+    private function isSupportColor(): bool
     {
         if (DIRECTORY_SEPARATOR === '\\') {
             $term = 'xterm' === getenv('TERM');
@@ -177,7 +171,7 @@ class Style
             return $isSupport;
         }
 
-        if (!defined('STDOUT')) {
+        if (! \defined('STDOUT')) {
             return false;
         }
 
@@ -188,11 +182,10 @@ class Style
      * 是否是交互是终端
      *
      * @param mixed $fileDescriptor
-     *
      * @return bool
      */
-    private function isInteractive($fileDescriptor)
+    private function isInteractive($fileDescriptor): bool
     {
-        return function_exists('posix_isatty') && @posix_isatty($fileDescriptor);
+        return \function_exists('posix_isatty') && @posix_isatty($fileDescriptor);
     }
 }

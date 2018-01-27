@@ -3,23 +3,17 @@
 namespace Swoft\Console\Bean\Annotation;
 
 /**
- * the annotation of mapping
+ * The annotation of mapping
  *
  * @Annotation
  * @Target({"METHOD"})
- *
- * @uses      Mapping
- * @version   2018年01月22日
- * @author    stelin <phpcrazy@126.com>
- * @copyright Copyright 2010-2016 swoft software
- * @license   PHP Version 7.x {@link http://www.php.net/license/3_0.txt}
  */
 class Mapping
 {
     /**
      * @var string
      */
-    private $name = "";
+    private $name = '';
 
     /**
      * Mapping constructor.

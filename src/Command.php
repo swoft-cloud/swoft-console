@@ -10,19 +10,13 @@ use Swoft\Console\Router\HandlerAdapter;
 use Swoft\Console\Router\HandlerMapping;
 
 /**
- * the command
- *
  * @Bean("command")
- * @uses      Command
- * @version   2018年01月22日
- * @author    stelin <phpcrazy@126.com>
- * @copyright Copyright 2010-2016 swoft software
- * @license   PHP Version 7.x {@link http://www.php.net/license/3_0.txt}
  */
 class Command
 {
     /**
      * @return void
+     * @throws \ReflectionException
      */
     public function run()
     {
@@ -34,7 +28,7 @@ class Command
         }
 
         /* @var HandlerMapping $router */
-        $router  = App::getBean('commandRoute');
+        $router = App::getBean('commandRoute');
         $handler = $router->getHandler();
 
         list($className, $method) = $handler;
@@ -52,7 +46,6 @@ class Command
         }
 
 
-
         /* @var HandlerAdapter $adapter */
         $adapter = App::getBean(HandlerAdapter::class);
         $adapter->doHandler($handler);
@@ -60,6 +53,8 @@ class Command
 
     /**
      * @param string $className
+     * @throws \ReflectionException
+     * @return void
      */
     private function indexComamnd(string $className)
     {
@@ -67,12 +62,12 @@ class Command
         $router = App::getBean('commandRoute');
 
         $collector = CommandCollector::getCollector();
-        $routes    = $collector[$className]['routes']?? [];
+        $routes = $collector[$className]['routes'] ?? [];
 
         $reflectionClass = new \ReflectionClass($className);
-        $classDocument   = $reflectionClass->getDocComment();
-        $classDocAry     = DocumentHelper::tagList($classDocument);
-        $classDesc       = $classDocAry['Description'];
+        $classDocument = $reflectionClass->getDocComment();
+        $classDocAry = DocumentHelper::tagList($classDocument);
+        $classDesc = $classDocAry['Description'];
 
         $methodCommands = [];
         foreach ($routes as $route) {
@@ -84,9 +79,9 @@ class Command
             if ($router->isDefaultCommand($methodName)) {
                 continue;
             }
-            $reflectionMethod            = $reflectionClass->getMethod($methodName);
-            $methodDocument              = $reflectionMethod->getDocComment();
-            $methodDocAry                = DocumentHelper::tagList($methodDocument);
+            $reflectionMethod = $reflectionClass->getMethod($methodName);
+            $methodDocument = $reflectionMethod->getDocComment();
+            $methodDocAry = DocumentHelper::tagList($methodDocument);
             $methodCommands[$mappedName] = $methodDocAry['Description'];
         }
 
@@ -108,14 +103,15 @@ class Command
      *
      * @param string $controllerClass
      * @param string $commandMethod
+     * @throws \ReflectionException
      */
     private function showCommandHelp(string $controllerClass, string $commandMethod)
     {
         // 反射获取方法描述
-        $reflectionClass  = new \ReflectionClass($controllerClass);
+        $reflectionClass = new \ReflectionClass($controllerClass);
         $reflectionMethod = $reflectionClass->getMethod($commandMethod);
-        $document         = $reflectionMethod->getDocComment();
-        $docs             = DocumentHelper::tagList($document);
+        $document = $reflectionMethod->getDocComment();
+        $docs = DocumentHelper::tagList($document);
 
         $commands = [];
 
@@ -131,13 +127,13 @@ class Command
 
         // 参数
         if (isset($docs['Arguments'])) {
-            $arguments              = $this->parserKeyAndDesc($docs['Arguments']);
+            $arguments = $this->parserKeyAndDesc($docs['Arguments']);
             $commands['Arguments:'] = $arguments;
         }
 
         // 选项
         if (isset($docs['Options'])) {
-            $options              = $this->parserKeyAndDesc($docs['Options']);
+            $options = $this->parserKeyAndDesc($docs['Options']);
             $commands['Options:'] = $options;
         }
 
@@ -153,16 +149,18 @@ class Command
 
     /**
      * help list
+     *
+     * @throws \ReflectionException
      */
     private function showCommandList()
     {
         $commands = $this->parserCmdAndDesc();
 
-        $commandList              = [];
-        $script                   = input()->getFullScript();
-        $commandList['Usage:']    = ["php $script"];
+        $commandList = [];
+        $script = input()->getFullScript();
+        $commandList['Usage:'] = ["php $script"];
         $commandList['Commands:'] = $commands;
-        $commandList['Options:']  = [
+        $commandList['Options:'] = [
             '-v,--version' => 'show version',
             '-h,--help'    => 'show help',
         ];
@@ -180,37 +178,38 @@ class Command
     private function showVersion()
     {
         // 当前版本信息
-        $swoftVersion  = App::version();
-        $phpVersion    = phpversion();
+        $swoftVersion = App::version();
+        $phpVersion = PHP_VERSION;
         $swooleVersion = SWOOLE_VERSION;
 
         // 显示面板
         output()->writeLogo();
         output()->writeln("swoft: <info>$swoftVersion</info>, php: <info>$phpVersion</info>, swoole: <info>$swooleVersion</info>", true);
-        output()->writeln("");
+        output()->writeln('');
     }
 
     /**
      * the command list
      *
      * @return array
+     * @throws \ReflectionException
      */
-    private function parserCmdAndDesc()
+    private function parserCmdAndDesc(): array
     {
-        $commands  = [];
+        $commands = [];
         $collector = CommandCollector::getCollector();
 
         /* @var \Swoft\Console\Router\HandlerMapping $route */
         $route = App::getBean('commandRoute');
 
         foreach ($collector as $className => $comamnd) {
-            $rc         = new \ReflectionClass($className);
+            $rc = new \ReflectionClass($className);
             $docComment = $rc->getDocComment();
-            $docAry     = DocumentHelper::tagList($docComment);
-            $desc       = $docAry['Description'];
+            $docAry = DocumentHelper::tagList($docComment);
+            $desc = $docAry['Description'];
 
-            $prefix            = $comamnd['name'];
-            $prefix            = $route->getPrefix($prefix, $className);
+            $prefix = $comamnd['name'];
+            $prefix = $route->getPrefix($prefix, $className);
             $commands[$prefix] = $desc;
         }
 
@@ -218,7 +217,7 @@ class Command
     }
 
     /**
-     * the base command
+     * @return void
      */
     private function baseCommand()
     {
@@ -237,17 +236,16 @@ class Command
      * 解析命令key和描述
      *
      * @param string $document 注解文档
-     *
      * @return array
      */
-    private function parserKeyAndDesc(string $document)
+    private function parserKeyAndDesc(string $document): array
     {
         $keyAndDesc = [];
-        $items      = explode("\n", $document);
+        $items = explode("\n", $document);
         foreach ($items as $item) {
-            $pos              = strpos($item, ' ');
-            $key              = substr($item, 0, $pos);
-            $desc             = substr($item, $pos + 1);
+            $pos = strpos($item, ' ');
+            $key = substr($item, 0, $pos);
+            $desc = substr($item, $pos + 1);
             $keyAndDesc[$key] = $desc;
         }
 

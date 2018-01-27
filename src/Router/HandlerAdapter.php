@@ -16,28 +16,22 @@ use Swoft\Core\RequestContext;
 use Swoft\Helper\PhpHelper;
 
 /**
- * the adapter of command
- *
+ * The adapter of command
  * @Bean()
- * @uses      HandlerAdapter
- * @version   2018年01月22日
- * @author    stelin <phpcrazy@126.com>
- * @copyright Copyright 2010-2016 swoft software
- * @license   PHP Version 7.x {@link http://www.php.net/license/3_0.txt}
  */
 class HandlerAdapter
 {
     /**
      * @param array $handler
-     *
      * @return void
+     * @throws \ReflectionException
      */
     public function doHandler(array $handler)
     {
         list($className, $method, $coroutine, $server) = $handler;
 
         $bindParams = $this->getBindParams($className, $method);
-        $class      = App::getBean($className);
+        $class = App::getBean($className);
         if ($coroutine) {
             $this->executeCommandByCoroutine($class, $method, $server, $bindParams);
         } else {
@@ -50,12 +44,12 @@ class HandlerAdapter
      *
      * @param string $className
      * @param string $methodName
-     *
      * @return array
+     * @throws \ReflectionException
      */
-    private function getBindParams(string $className, string $methodName)
+    private function getBindParams(string $className, string $methodName): array
     {
-        $reflectClass  = new \ReflectionClass($className);
+        $reflectClass = new \ReflectionClass($className);
         $reflectMethod = $reflectClass->getMethod($methodName);
         $reflectParams = $reflectMethod->getParameters();
 
@@ -77,7 +71,7 @@ class HandlerAdapter
             $type = $reflectType->__toString();
             if ($type === Output::class) {
                 $bindParams[$key] = \output();
-            } elseif ($type == Input::class) {
+            } elseif ($type === Input::class) {
                 $bindParams[$key] = \input();
             } else {
                 $bindParams[$key] = null;
@@ -135,9 +129,9 @@ class HandlerAdapter
 
         // 初始化
         $spanId = 0;
-        $logId  = uniqid();
+        $logId = uniqid('', true);
 
-        $uri         = static::class . "->" . $command;
+        $uri = static::class . '->' . $command;
         $contextData = [
             'logid'       => $logId,
             'spanid'      => $spanId,

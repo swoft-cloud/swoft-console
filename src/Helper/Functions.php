@@ -1,5 +1,5 @@
 <?php
-if (!function_exists('input')) {
+if (! function_exists('input')) {
     /**
      * @return \Swoft\Console\Input\Input
      */
@@ -9,7 +9,7 @@ if (!function_exists('input')) {
     }
 }
 
-if (!function_exists('output')) {
+if (! function_exists('output')) {
     /**
      * @return \Swoft\Console\Output\Output
      */
@@ -19,7 +19,7 @@ if (!function_exists('output')) {
     }
 }
 
-if (!function_exists('style')) {
+if (! function_exists('style')) {
     /**
      * @return \Swoft\Console\Style\Style::class
      */
