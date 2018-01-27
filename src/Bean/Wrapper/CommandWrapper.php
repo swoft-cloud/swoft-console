@@ -22,10 +22,9 @@ class CommandWrapper extends AbstractWrapper
      *
      * @var array
      */
-    protected $classAnnotations
-        = [
-            Command::class,
-        ];
+    protected $classAnnotations = [
+        Command::class,
+    ];
 
     /**
      * 属性注解
@@ -39,19 +38,17 @@ class CommandWrapper extends AbstractWrapper
      *
      * @var array
      */
-    protected $methodAnnotations
-        = [
-            Mapping::class
-        ];
+    protected $methodAnnotations = [
+        Mapping::class
+    ];
 
     /**
      * 是否解析类注解
      *
      * @param array $annotations
-     *
      * @return bool
      */
-    public function isParseClassAnnotations(array $annotations)
+    public function isParseClassAnnotations(array $annotations): bool
     {
         return isset($annotations[Command::class]);
     }
@@ -60,10 +57,9 @@ class CommandWrapper extends AbstractWrapper
      * 是否解析属性注解
      *
      * @param array $annotations
-     *
      * @return bool
      */
-    public function isParsePropertyAnnotations(array $annotations)
+    public function isParsePropertyAnnotations(array $annotations): bool
     {
         return false;
     }
@@ -72,10 +68,9 @@ class CommandWrapper extends AbstractWrapper
      * 是否解析方法注解
      *
      * @param array $annotations
-     *
      * @return bool
      */
-    public function isParseMethodAnnotations(array $annotations)
+    public function isParseMethodAnnotations(array $annotations): bool
     {
         return isset($annotations[Mapping::class]);
     }
