@@ -3,7 +3,7 @@
 namespace Swoft\Console\Bean\Parser;
 
 use Swoft\Bean\Annotation\Scope;
-use Swoft\Bean\Parser\AbstractParserInterface;
+use Swoft\Bean\Parser\AbstractParser;
 use Swoft\Console\Bean\Annotation\Command;
 use Swoft\Console\Bean\Collector\CommandCollector;
 
@@ -16,7 +16,7 @@ use Swoft\Console\Bean\Collector\CommandCollector;
  * @copyright Copyright 2010-2016 swoft software
  * @license   PHP Version 7.x {@link http://www.php.net/license/3_0.txt}
  */
-class CommandParser extends AbstractParserInterface
+class CommandParser extends AbstractParser
 {
     /**
      * @param string  $className
