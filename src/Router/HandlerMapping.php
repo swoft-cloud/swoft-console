@@ -2,12 +2,10 @@
 
 namespace Swoft\Console\Router;
 
-use Swoft\Bean\Annotation\Bean;
 use Swoft\Router\HandlerMappingInterface;
 
 /**
  * The mapping of handler
- * @Bean("commandRoute")
  */
 class HandlerMapping implements HandlerMappingInterface
 {
