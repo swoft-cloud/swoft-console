@@ -1,6 +1,6 @@
 <?php
 
-namespace Swoft\Console;
+namespace Swoft\Console\Bootstrap;
 
 use Swoft\Bean\Annotation\BootBean;
 use Swoft\Console\Router\HandlerMapping;
