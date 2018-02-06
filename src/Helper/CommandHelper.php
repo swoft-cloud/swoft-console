@@ -102,7 +102,7 @@ class CommandHelper
      * @param bool  $enable 是否启用
      * @return bool
      */
-    private static function filterBool($val, $enable = true): bool
+    private static function filterBool($val, $enable = true)
     {
         if ($enable) {
             if (\is_bool($val) || is_numeric($val)) {
