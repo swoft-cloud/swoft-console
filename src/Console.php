@@ -4,6 +4,7 @@ namespace Swoft\Console;
 
 use Swoft\App;
 use Swoft\Console\Bean\Collector\CommandCollector;
+use Swoft\Core\Coroutine;
 
 /**
  * Console
@@ -11,16 +12,11 @@ use Swoft\Console\Bean\Collector\CommandCollector;
 class Console implements ConsoleInterface
 {
     /**
-     * @var int
-     */
-    private static $id;
-
-    /**
      * Console constructor.
      */
     public function __construct()
     {
-        $this->init();
+        Coroutine::initTid();
         $this->registerMapping();
     }
 
@@ -37,24 +33,6 @@ class Console implements ConsoleInterface
             output()->writeln(sprintf('<error>%s</error>', $e->getMessage()), true, false);
             output()->writeln(sprintf('<error>%s</error>', $e->getTraceAsString()), true, true);
         }
-    }
-
-    /**
-     * get id of console
-     *
-     * @return int|null
-     */
-    public static function id()
-    {
-        return self::$id;
-    }
-
-    /**
-     * @return void
-     */
-    private function init()
-    {
-        self::$id = uniqid('', true);
     }
 
     /**

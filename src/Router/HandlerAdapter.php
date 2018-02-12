@@ -92,7 +92,7 @@ class HandlerAdapter
     private function executeCommandByCoroutine($class, string $method, bool $server, $bindParams)
     {
         Coroutine::create(function () use ($class, $method, $server, $bindParams) {
-            $this->beforeCommand($method, $server);
+            $this->beforeCommand(get_parent_class($class), $method, $server);
             PhpHelper::call([$class, $method], $bindParams);
             $this->afterCommand($method, $server);
         });
@@ -108,7 +108,7 @@ class HandlerAdapter
      */
     private function executeCommand($class, string $method, bool $server, $bindParams)
     {
-        $this->beforeCommand($method, $server);
+        $this->beforeCommand(get_parent_class($class), $method, $server);
         PhpHelper::call([$class, $method], $bindParams);
         $this->afterCommand($method, $server);
     }
@@ -116,10 +116,11 @@ class HandlerAdapter
     /**
      * before command
      *
+     * @param string $class
      * @param string $command
      * @param bool   $server
      */
-    private function beforeCommand(string $command, bool $server)
+    private function beforeCommand(string $class, string $command, bool $server)
     {
         if ($server) {
             return;
@@ -129,9 +130,9 @@ class HandlerAdapter
 
         // 初始化
         $spanId = 0;
-        $logId = uniqid('', true);
+        $logId = uniqid();
 
-        $uri = static::class . '->' . $command;
+        $uri = $class . '->' . $command;
         $contextData = [
             'logid'       => $logId,
             'spanid'      => $spanId,
