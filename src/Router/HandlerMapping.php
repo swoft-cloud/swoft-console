@@ -2,10 +2,10 @@
 
 namespace Swoft\Console\Router;
 
-use Swoft\Router\HandlerMappingInterface;
+use Swoft\Http\Message\Router\HandlerMappingInterface;
 
 /**
- * The mapping of handler
+ * Handler mapping
  */
 class HandlerMapping implements HandlerMappingInterface
 {
