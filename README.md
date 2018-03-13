@@ -1,9 +1,19 @@
 # Swoft Console
-Swoft view Component
+
+Swoft Console Component
 
 # Install
 
+- composer command
+
+```bash
+composer require swoft/console
+```
+
 # Document
 
+Please see [document site](https://doc.swoft.org)
+
 # LICENSE
-Swoft Console Component is open-sourced software licensed under the [Apache license](LICENSE).
+
+The Component is open-sourced software licensed under the [Apache license](LICENSE).

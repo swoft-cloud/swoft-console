@@ -5,6 +5,7 @@ namespace Swoft\Console;
 use Swoft\App;
 use Swoft\Bean\Annotation\Bean;
 use Swoft\Console\Bean\Collector\CommandCollector;
+use Swoft\Console\Helper\DocBlockHelper;
 use Swoft\Helper\DocumentHelper;
 use Swoft\Console\Router\HandlerAdapter;
 use Swoft\Console\Router\HandlerMapping;
@@ -14,6 +15,26 @@ use Swoft\Console\Router\HandlerMapping;
  */
 class Command
 {
+    // name -> {name}
+    const ANNOTATION_VAR = '{%s}'; // '{$%s}';
+
+    /**
+     * 为命令注解提供可解析解析变量. 可以在命令的注释中使用
+     * @return array
+     */
+    public function annotationVars(): array
+    {
+        // e.g: `more info see {name}:index`
+        return [
+            // 'name' => self::getName(),
+            // 'group' => self::getName(),
+            'workDir' => input()->getPwd(),
+            'script' => input()->getScript(), // bin/app
+            'command' => input()->getCommand(), // demo OR home:test
+            'fullCommand' => input()->getScript() . ' ' . input()->getCommand(),
+        ];
+    }
+
     /**
      * @return void
      * @throws \ReflectionException
@@ -70,11 +91,15 @@ class Command
         $classDesc = $classDocAry['Description'];
 
         $methodCommands = [];
-        foreach ($routes as $route) {
 
+        foreach ($routes as $route) {
             $mappedName = $route['mappedName'];
             $methodName = $route['methodName'];
             $mappedName = empty($mappedName) ? $methodName : $mappedName;
+
+            if ($methodName === 'init') {
+                continue;
+            }
 
             if ($router->isDefaultCommand($methodName)) {
                 continue;
@@ -88,7 +113,7 @@ class Command
         // 命令显示结构
         $commandList = [
             'Description:' => [$classDesc],
-            'Usage:'       => ['server:{command} [arguments] [options]'],
+            'Usage:'       => [ \input()->getCommand() . ':{command} [arguments] [options]'],
             'Commands:'    => $methodCommands,
             'Options:'     => [
                 '-h,--help' => 'Show help of the command group or specified command action',
@@ -111,7 +136,9 @@ class Command
         $reflectionClass = new \ReflectionClass($controllerClass);
         $reflectionMethod = $reflectionClass->getMethod($commandMethod);
         $document = $reflectionMethod->getDocComment();
-        $docs = DocumentHelper::tagList($document);
+        $document = $this->parseAnnotationVars($document, $this->annotationVars());
+        // $docs = DocumentHelper::tagList($document);
+        $docs = DocBlockHelper::getTags($document);
 
         $commands = [];
 
@@ -122,24 +149,22 @@ class Command
 
         // 使用
         if (isset($docs['Usage'])) {
-            $commands['Usage:'] = explode("\n", $docs['Usage']);
+            $commands['Usage:'] = $docs['Usage'];
         }
 
         // 参数
         if (isset($docs['Arguments'])) {
-            $arguments = $this->parserKeyAndDesc($docs['Arguments']);
-            $commands['Arguments:'] = $arguments;
+            // $arguments = $this->parserKeyAndDesc($docs['Arguments']);
+            $commands['Arguments:'] = $docs['Arguments'];
         }
 
         // 选项
         if (isset($docs['Options'])) {
-            $options = $this->parserKeyAndDesc($docs['Options']);
-            $commands['Options:'] = $options;
+            // $options = $this->parserKeyAndDesc($docs['Options']);
+            $commands['Options:'] = $docs['Options'];
         }
 
-        /**
-         * 实例
-         */
+        // 实例
         if (isset($docs['Example'])) {
             $commands['Example:'] = [$docs['Example']];
         }
@@ -218,6 +243,7 @@ class Command
 
     /**
      * @return void
+     * @throws \ReflectionException
      */
     private function baseCommand()
     {
@@ -250,5 +276,28 @@ class Command
         }
 
         return $keyAndDesc;
+    }
+
+    /**
+     * 替换注解中的变量为对应的值
+     * @param string $str
+     * @param array $vars
+     * @return string
+     */
+    protected function parseAnnotationVars(string $str, array $vars): string
+    {
+        // not use vars
+        if (false === strpos($str, '{')) {
+            return $str;
+        }
+
+        $map = [];
+
+        foreach ($vars as $key => $value) {
+            $key = sprintf(self::ANNOTATION_VAR, $key);
+            $map[$key] = $value;
+        }
+
+        return $map ? strtr($str, $map) : $str;
     }
 }
