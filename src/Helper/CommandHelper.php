@@ -2,29 +2,57 @@
 
 namespace Swoft\Console\Helper;
 
+/**
+ * Class CommandHelper
+ * @package Swoft\Console\Helper
+ */
 class CommandHelper
 {
     /**
-     * true字符
+     * These words will be as a Boolean value
      */
     const TRUE_WORDS = '|on|yes|true|';
-
-    /**
-     * false字符
-     */
     const FALSE_WORDS = '|off|no|false|';
 
     /**
-     * 解析命令
-     *
+     * Parses $GLOBALS['argv'] for parameters and assigns them to an array.
+     * eg:
+     * ```
+     * php cli.php server start name=john city=chengdu -s=test --page=23 -d -rf --debug --task=off -y=false -D -e dev -v vvv
+     * ```
+     * ```php
+     * $result = InputParser::fromArgv($_SERVER['argv']);
+     * ```
+     * Supports args:
+     * <value>
+     * arg=<value>
+     * Supports opts:
+     * -e
+     * -e <value>
+     * -e=<value>
+     * --long-opt
+     * --long-opt <value>
+     * --long-opt=<value>
+     * @link http://php.net/manual/zh/function.getopt.php#83414
+     * @from inhere/console
      * @param array $params
-     * @param array $noValues
-     * @param bool  $mergeOpts
+     * @param array $config
      * @return array
      */
-    public static function parse(array $params, array $noValues = [], $mergeOpts = false): array
+    public static function parse(array $params, array $config = []): array
     {
+        $config = array_merge([
+            // List of parameters without values(bool option keys)
+            'noValues' => [], // ['debug', 'h']
+            // Whether merge short-opts and long-opts
+            'mergeOpts' => false,
+            // list of params allow array.
+            'arrayValues' => [], // ['names', 'status']
+        ], $config);
+
         $args = $sOpts = $lOpts = [];
+        $noValues = array_flip((array)$config['noValues']);
+        $arrayValues = array_flip((array)$config['arrayValues']);
 
         // each() will deprecated at 7.2. so,there use current and next instead it.
         // while (list(,$p) = each($params)) {
@@ -33,36 +61,36 @@ class CommandHelper
 
             // is options
             if ($p{0} === '-') {
-                $isLong = false;
+                $val = true;
                 $opt = substr($p, 1);
-                $value = true;
+                $isLong = false;
 
                 // long-opt: (--<opt>)
                 if ($opt{0} === '-') {
-                    $isLong = true;
                     $opt = substr($opt, 1);
+                    $isLong = true;
 
                     // long-opt: value specified inline (--<opt>=<value>)
                     if (strpos($opt, '=') !== false) {
-                        list($opt, $value) = explode('=', $opt, 2);
+                        list($opt, $val) = explode('=', $opt, 2);
                     }
 
                     // short-opt: value specified inline (-<opt>=<value>)
-                } elseif (\strlen($opt) > 2 && $opt{1} === '=') {
-                    list($opt, $value) = explode('=', $opt, 2);
+                } elseif (isset($opt{1}) && $opt{1} === '=') {
+                    list($opt, $val) = explode('=', $opt, 2);
                 }
 
                 // check if next parameter is a descriptor or a value
-                $nxp = current($params);
+                $nxt = current($params);
 
-                // fix: allow empty string ''
-                if ($value === true && $nxp !== false && (! $nxp || $nxp{0} !== '-') && ! \in_array($opt, $noValues, true)) {
-                    // list(,$value) = each($params);
-                    $value = current($params);
+                // next elem is value. fix: allow empty string ''
+                if ($val === true && !isset($noValues[$opt]) && self::nextIsValue($nxt)) {
+                    // list(,$val) = each($params);
+                    $val = $nxt;
                     next($params);
 
                     // short-opt: bool opts. like -e -abc
-                } elseif (! $isLong && $value === true) {
+                } elseif (!$isLong && $val === true) {
                     foreach (str_split($opt) as $char) {
                         $sOpts[$char] = true;
                     }
@@ -70,25 +98,36 @@ class CommandHelper
                     continue;
                 }
 
+                $val = self::filterBool($val);
+                $isArray = isset($arrayValues[$opt]);
+
                 if ($isLong) {
-                    $lOpts[$opt] = self::filterBool($value);
+                    if ($isArray) {
+                        $lOpts[$opt][] = $val;
+                    } else {
+                        $lOpts[$opt] = $val;
+                    }
                 } else {
-                    $sOpts[$opt] = self::filterBool($value);
+                    if ($isArray) {
+                        $sOpts[$opt][] = $val;
+                    } else {
+                        $sOpts[$opt] = $val;
+                    }
                 }
 
                 // arguments: param doesn't belong to any option, define it is args
             } else {
                 // value specified inline (<arg>=<value>)
                 if (strpos($p, '=') !== false) {
-                    list($name, $value) = explode('=', $p, 2);
-                    $args[$name] = self::filterBool($value);
+                    list($name, $val) = explode('=', $p, 2);
+                    $args[$name] = self::filterBool($val);
                 } else {
                     $args[] = $p;
                 }
             }
         }
 
-        if ($mergeOpts) {
+        if ($config['mergeOpts']) {
             return [$args, array_merge($sOpts, $lOpts)];
         }
 
@@ -96,31 +135,47 @@ class CommandHelper
     }
 
     /**
-     * 过滤布尔值
-     *
-     * @param mixed $val    值
-     * @param bool  $enable 是否启用
-     * @return bool
+     * @param string|bool $val
+     * @param bool $enable
+     * @return bool|mixed
      */
-    private static function filterBool($val, $enable = true)
+    public static function filterBool($val, $enable = true)
     {
         if ($enable) {
             if (\is_bool($val) || is_numeric($val)) {
                 return $val;
             }
 
-            $tVal = strtolower($val);
-
             // check it is a bool value.
-            if (false !== strpos(self::TRUE_WORDS, "|$tVal|")) {
+            if (false !== stripos(self::TRUE_WORDS, "|$val|")) {
                 return true;
             }
 
-            if (false !== strpos(self::FALSE_WORDS, "|$tVal|")) {
+            if (false !== stripos(self::FALSE_WORDS, "|$val|")) {
                 return false;
             }
         }
 
         return $val;
+    }
+
+    /**
+     * @param mixed $val
+     * @return bool
+     */
+    public static function nextIsValue($val): bool
+    {
+        // current() fetch error, will return FALSE
+        if ($val === false) {
+            return false;
+        }
+
+        // if is: '', 0
+        if (!$val) {
+            return true;
+        }
+
+        // it isn't option or named argument
+        return $val{0} !== '-' && false === strpos($val, '=');
     }
 }

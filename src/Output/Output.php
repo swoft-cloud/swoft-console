@@ -75,7 +75,7 @@ class Output implements OutputInterface
             $this->writeln($title);
 
             // 输出块内容
-            $this->writeItems($items, $cmdStyle);
+            $this->writeItems((array)$items, $cmdStyle);
             $this->writeln('');
         }
     }
