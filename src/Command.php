@@ -91,11 +91,15 @@ class Command
         $classDesc = $classDocAry['Description'];
 
         $methodCommands = [];
-        foreach ($routes as $route) {
 
+        foreach ($routes as $route) {
             $mappedName = $route['mappedName'];
             $methodName = $route['methodName'];
             $mappedName = empty($mappedName) ? $methodName : $mappedName;
+
+            if ($methodName === 'init') {
+                continue;
+            }
 
             if ($router->isDefaultCommand($methodName)) {
                 continue;
