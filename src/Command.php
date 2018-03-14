@@ -116,7 +116,7 @@ class Command
             'Usage:'       => [ \input()->getCommand() . ':{command} [arguments] [options]'],
             'Commands:'    => $methodCommands,
             'Options:'     => [
-                '-h,--help' => 'Show help of the command group or specified command action',
+                '-h, --help' => 'Show help of the command group or specified command action',
             ],
         ];
 
@@ -186,8 +186,8 @@ class Command
         $commandList['Usage:'] = ["php $script"];
         $commandList['Commands:'] = $commands;
         $commandList['Options:'] = [
-            '-v,--version' => 'show version',
-            '-h,--help'    => 'show help',
+            '-h, --help'    => 'show help information',
+            '-v, --version' => 'show version',
         ];
 
         // show logo
