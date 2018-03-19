@@ -30,7 +30,7 @@ class Output implements OutputInterface
     public function writeln($messages = '', $newline = true, $quit = false)
     {
         if (\is_array($messages)) {
-            $messages = implode($newline ? PHP_EOL : '', $messages);
+            $messages = \implode($newline ? PHP_EOL : '', $messages);
         }
 
         // 文字里面颜色标签翻译
@@ -111,7 +111,7 @@ class Output implements OutputInterface
 
             // 命令和描述
             $maxLength = $this->getCmdMaxLength(array_keys($items));
-            $cmd = str_pad($cmd, $maxLength, ' ');
+            $cmd = \str_pad($cmd, $maxLength, ' ');
             $cmd = "<$cmdStyle>$cmd</$cmdStyle>";
             $message = self::LEFT_CHAR . $cmd . self::GAP_CHAR . $desc;
 
