@@ -18,6 +18,11 @@ class Command
     /**
      * @var bool
      */
+    private $enabled = true;
+
+    /**
+     * @var bool
+     */
     private $coroutine = true;
 
     /**
@@ -35,12 +40,19 @@ class Command
         if (isset($values['value'])) {
             $this->name = $values['value'];
         }
+
         if (isset($values['name'])) {
             $this->name = $values['name'];
         }
+
         if (isset($values['coroutine'])) {
             $this->coroutine = $values['coroutine'];
         }
+
+        if (isset($values['enabled'])) {
+            $this->enabled = (bool)$values['enabled'];
+        }
+
         if (isset($values['server'])) {
             $this->server = $values['server'];
         }
@@ -68,5 +80,13 @@ class Command
     public function isServer(): bool
     {
         return $this->server;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isEnabled(): bool
+    {
+        return $this->enabled;
     }
 }

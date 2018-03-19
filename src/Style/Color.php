@@ -93,7 +93,7 @@ final class Color
      * @return Color
      * @throws \InvalidArgumentException
      */
-    public static function make(string $fg = '', string $bg = '', array $options = [])
+    public static function make(string $fg = '', string $bg = '', array $options = []): Color
     {
         return new self($fg, $bg, $options);
     }
@@ -112,7 +112,7 @@ final class Color
         $fgNotExist = ! empty($fg) && ! array_key_exists($fg, self::COLORS);
         $bgNotExist = ! empty($bg) && ! array_key_exists($bg, self::COLORS);
         if ($fgNotExist || $bgNotExist) {
-            throw new \InvalidArgumentException("Foreground和Background参数值，不存在，检查后再试！");
+            throw new \InvalidArgumentException('Foreground和Background参数值，不存在，检查后再试！');
         }
 
         // 前景色
@@ -128,7 +128,7 @@ final class Color
         foreach ($options as $option) {
             // 选项不存在
             if (! array_key_exists($option, self::OPTIONS)) {
-                throw new \InvalidArgumentException("选项参数不存在，option=" . $option);
+                throw new \InvalidArgumentException('选项参数不存在，option=' . $option);
             }
             $this->options[] = self::OPTIONS[$option];
         }

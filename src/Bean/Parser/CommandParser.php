@@ -19,20 +19,21 @@ use Swoft\Console\Bean\Collector\CommandCollector;
 class CommandParser extends AbstractParser
 {
     /**
-     * @param string  $className
+     * @param string $className
      * @param Command $objectAnnotation
-     * @param string  $propertyName
-     * @param string  $methodName
+     * @param string $propertyName
+     * @param string $methodName
      *
+     * @param null $propertyValue
      * @return mixed
      */
-    public function parser(string $className, $objectAnnotation = null, string $propertyName = "", string $methodName = "", $propertyValue = null)
+    public function parser(string $className, $objectAnnotation = null, string $propertyName = '', string $methodName = '', $propertyValue = null)
     {
         $beanName = $className;
         $scope    = Scope::SINGLETON;
 
         CommandCollector::collect($className, $objectAnnotation, $propertyName, $methodName, $propertyValue);
 
-        return [$beanName, $scope, ""];
+        return [$beanName, $scope, ''];
     }
 }

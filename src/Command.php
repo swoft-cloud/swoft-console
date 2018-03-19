@@ -6,7 +6,6 @@ use Swoft\App;
 use Swoft\Bean\Annotation\Bean;
 use Swoft\Console\Bean\Collector\CommandCollector;
 use Swoft\Console\Helper\DocBlockHelper;
-use Swoft\Helper\DocumentHelper;
 use Swoft\Console\Router\HandlerAdapter;
 use Swoft\Console\Router\HandlerMapping;
 
@@ -37,6 +36,7 @@ class Command
 
     /**
      * @return void
+     * @throws \InvalidArgumentException
      * @throws \ReflectionException
      */
     public function run()
@@ -55,7 +55,7 @@ class Command
         list($className, $method) = $handler;
 
         if ($router->isDefaultCommand($method)) {
-            $this->indexComamnd($className);
+            $this->indexCommand($className);
 
             return;
         }
@@ -77,7 +77,7 @@ class Command
      * @throws \ReflectionException
      * @return void
      */
-    private function indexComamnd(string $className)
+    private function indexCommand(string $className)
     {
         /* @var HandlerMapping $router */
         $router = App::getBean('commandRoute');
@@ -87,7 +87,7 @@ class Command
 
         $reflectionClass = new \ReflectionClass($className);
         $classDocument = $reflectionClass->getDocComment();
-        $classDocAry = DocumentHelper::tagList($classDocument);
+        $classDocAry = DocBlockHelper::getTags($classDocument);
         $classDesc = $classDocAry['Description'];
 
         $methodCommands = [];
@@ -106,7 +106,7 @@ class Command
             }
             $reflectionMethod = $reflectionClass->getMethod($methodName);
             $methodDocument = $reflectionMethod->getDocComment();
-            $methodDocAry = DocumentHelper::tagList($methodDocument);
+            $methodDocAry = DocBlockHelper::getTags($methodDocument);
             $methodCommands[$mappedName] = $methodDocAry['Description'];
         }
 
@@ -137,7 +137,6 @@ class Command
         $reflectionMethod = $reflectionClass->getMethod($commandMethod);
         $document = $reflectionMethod->getDocComment();
         $document = $this->parseAnnotationVars($document, $this->annotationVars());
-        // $docs = DocumentHelper::tagList($document);
         $docs = DocBlockHelper::getTags($document);
 
         $commands = [];
@@ -173,7 +172,7 @@ class Command
     }
 
     /**
-     * help list
+     * show all commands for the console app
      *
      * @throws \ReflectionException
      */
@@ -182,19 +181,19 @@ class Command
         $commands = $this->parserCmdAndDesc();
 
         $commandList = [];
-        $script = input()->getFullScript();
-        $commandList['Usage:'] = ["php $script"];
+        $script = \input()->getFullScript();
+        $commandList['Usage:'] = ["php $script {command} [arguments] [options]"];
         $commandList['Commands:'] = $commands;
         $commandList['Options:'] = [
-            '-h, --help'    => 'show help information',
-            '-v, --version' => 'show version',
+            '-h, --help'    => 'Display help information',
+            '-v, --version' => 'Display version information',
         ];
 
         // show logo
-        output()->writeLogo();
+        \output()->writeLogo();
 
         // output list
-        output()->writeList($commandList, 'comment', 'info');
+        \output()->writeList($commandList, 'comment', 'info');
     }
 
     /**
@@ -208,9 +207,11 @@ class Command
         $swooleVersion = SWOOLE_VERSION;
 
         // 显示面板
-        output()->writeLogo();
-        output()->writeln("swoft: <info>$swoftVersion</info>, php: <info>$phpVersion</info>, swoole: <info>$swooleVersion</info>", true);
-        output()->writeln('');
+        \output()->writeLogo();
+        \output()->writeln(
+            "swoft: <info>$swoftVersion</info>, php: <info>$phpVersion</info>, swoole: <info>$swooleVersion</info>\n",
+            true
+        );
     }
 
     /**
@@ -227,16 +228,22 @@ class Command
         /* @var \Swoft\Console\Router\HandlerMapping $route */
         $route = App::getBean('commandRoute');
 
-        foreach ($collector as $className => $comamnd) {
+        foreach ($collector as $className => $command) {
+            if (!$command['enabled']) {
+                continue;
+            }
+
             $rc = new \ReflectionClass($className);
             $docComment = $rc->getDocComment();
-            $docAry = DocumentHelper::tagList($docComment);
-            $desc = $docAry['Description'];
+            $docAry = DocBlockHelper::getTags($docComment);
 
-            $prefix = $comamnd['name'];
+            $prefix = $command['name'];
             $prefix = $route->getPrefix($prefix, $className);
-            $commands[$prefix] = $desc;
+            $commands[$prefix] = \ucfirst($docAry['Description']);
         }
+
+        // sort commands
+        ksort($commands);
 
         return $commands;
     }
@@ -256,26 +263,6 @@ class Command
 
         // 显示命令列表
         $this->showCommandList();
-    }
-
-    /**
-     * 解析命令key和描述
-     *
-     * @param string $document 注解文档
-     * @return array
-     */
-    private function parserKeyAndDesc(string $document): array
-    {
-        $keyAndDesc = [];
-        $items = explode("\n", $document);
-        foreach ($items as $item) {
-            $pos = strpos($item, ' ');
-            $key = substr($item, 0, $pos);
-            $desc = substr($item, $pos + 1);
-            $keyAndDesc[$key] = $desc;
-        }
-
-        return $keyAndDesc;
     }
 
     /**

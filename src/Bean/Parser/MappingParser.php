@@ -22,13 +22,14 @@ class MappingParser extends AbstractParser
      * @param Mapping $objectAnnotation
      * @param string $propertyName
      * @param string $methodName
+     * @param null $propertyValue
      * @return void
      */
     public function parser(
         string $className,
         $objectAnnotation = null,
-        string $propertyName = "",
-        string $methodName = "",
+        string $propertyName = '',
+        string $methodName = '',
         $propertyValue = null
     ) {
         CommandCollector::collect($className, $objectAnnotation, $propertyName, $methodName, $propertyValue);
