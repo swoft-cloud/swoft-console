@@ -20,7 +20,7 @@ class CommandCollector implements CollectorInterface
      * collect
      *
      * @param string $className
-     * @param object $objectAnnotation
+     * @param mixed $objectAnnotation
      * @param string $propertyName
      * @param string $methodName
      * @param null   $propertyValue
@@ -54,6 +54,7 @@ class CommandCollector implements CollectorInterface
         $server = $objectAnnotation->isServer();
 
         self::$commandMapping[$className]['name'] = $commandName;
+        self::$commandMapping[$className]['enabled'] = $objectAnnotation->isEnabled();
         self::$commandMapping[$className]['coroutine'] = $coroutine;
         self::$commandMapping[$className]['server'] = $server;
     }

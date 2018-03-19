@@ -32,7 +32,7 @@ class HandlerMapping implements HandlerMappingInterface
     /**
      * the default command
      */
-    private $deaultCommand = 'index';
+    private $defaultCommand = 'index';
 
     /**
      * the delimiter
@@ -83,7 +83,7 @@ class HandlerMapping implements HandlerMappingInterface
      */
     public function isDefaultCommand(string $comamnd): bool
     {
-        return $comamnd === $this->deaultCommand;
+        return $comamnd === $this->defaultCommand;
     }
 
     /**
@@ -109,7 +109,7 @@ class HandlerMapping implements HandlerMappingInterface
         }
 
         if (empty($command)) {
-            $command = $this->deaultCommand;
+            $command = $this->defaultCommand;
         }
 
         return [$group, $command];
@@ -153,8 +153,8 @@ class HandlerMapping implements HandlerMappingInterface
             $this->routes[$commandKey] = [$className, $methodName, $coroutine, $server];
         }
 
-        $commandKey = $this->getCommandString($prefix, $this->deaultCommand);
-        $this->routes[$commandKey] = [$className, $this->deaultCommand];
+        $commandKey = $this->getCommandString($prefix, $this->defaultCommand);
+        $this->routes[$commandKey] = [$className, $this->defaultCommand];
     }
 
     /**

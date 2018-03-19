@@ -23,14 +23,18 @@ class Output implements OutputInterface
     /**
      * 输出一行数据
      *
-     * @param string $messages 信息
+     * @param string|array $messages 信息
      * @param bool   $newline  是否换行
      * @param bool   $quit     是否退出
      */
     public function writeln($messages = '', $newline = true, $quit = false)
     {
+        if (\is_array($messages)) {
+            $messages = \implode($newline ? PHP_EOL : '', $messages);
+        }
+
         // 文字里面颜色标签翻译
-        $messages = \style()->t($messages);
+        $messages = \style()->t((string)$messages);
 
         // 输出文字
         echo $messages;
@@ -40,7 +44,7 @@ class Output implements OutputInterface
 
         // 是否退出
         if ($quit) {
-            exit();
+            exit;
         }
     }
 
@@ -49,14 +53,23 @@ class Output implements OutputInterface
      */
     public function writeLogo()
     {
-        $logo = "<info>
+        $logo = "
  ____                __ _
 / ___|_      _____  / _| |_
 \___ \ \ /\ / / _ \| |_| __|
  ___) \ V  V / (_) |  _| |_
 |____/ \_/\_/ \___/|_|  \__|
-</info>";
-        $this->writeln($logo);
+";
+        $this->colored(' ' . \ltrim($logo));
+    }
+
+    /**
+     * @param string $text
+     * @param string $tag
+     */
+    public function colored(string $text, string $tag = 'info')
+    {
+        $this->writeln(\sprintf('<%s>%s</%s>', $tag, $text, $tag));
     }
 
     /**
@@ -98,7 +111,7 @@ class Output implements OutputInterface
 
             // 命令和描述
             $maxLength = $this->getCmdMaxLength(array_keys($items));
-            $cmd = str_pad($cmd, $maxLength, ' ');
+            $cmd = \str_pad($cmd, $maxLength, ' ');
             $cmd = "<$cmdStyle>$cmd</$cmdStyle>";
             $message = self::LEFT_CHAR . $cmd . self::GAP_CHAR . $desc;
 

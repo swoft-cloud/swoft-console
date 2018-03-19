@@ -30,8 +30,8 @@ class Console implements ConsoleInterface
             $command = App::getBean('command');
             $command->run();
         } catch (\Throwable $e) {
-            output()->writeln(sprintf('<error>%s</error>', $e->getMessage()), true, false);
-            output()->writeln(sprintf('<error>%s</error>', $e->getTraceAsString()), true, true);
+            \output()->writeln(sprintf('<error>%s</error>', $e->getMessage()), true, false);
+            \output()->writeln(sprintf("Trace:\n%s", $e->getTraceAsString()), true, true);
         }
     }
 

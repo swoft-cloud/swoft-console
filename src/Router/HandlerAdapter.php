@@ -84,7 +84,7 @@ class HandlerAdapter
     /**
      * execute command by coroutine
      *
-     * @param object $class
+     * @param mixed $class
      * @param string $method
      * @param bool   $server
      * @param array  $bindParams
@@ -92,7 +92,7 @@ class HandlerAdapter
     private function executeCommandByCoroutine($class, string $method, bool $server, $bindParams)
     {
         Coroutine::create(function () use ($class, $method, $server, $bindParams) {
-            $this->beforeCommand(get_parent_class($class), $method, $server);
+            $this->beforeCommand(\get_parent_class($class), $method, $server);
             PhpHelper::call([$class, $method], $bindParams);
             $this->afterCommand($method, $server);
         });
@@ -101,14 +101,14 @@ class HandlerAdapter
     /**
      * execute command
      *
-     * @param object $class
+     * @param mixed $class
      * @param string $method
      * @param bool   $server
      * @param array  $bindParams
      */
     private function executeCommand($class, string $method, bool $server, $bindParams)
     {
-        $this->beforeCommand(get_parent_class($class), $method, $server);
+        $this->beforeCommand(\get_parent_class($class), $method, $server);
         PhpHelper::call([$class, $method], $bindParams);
         $this->afterCommand($method, $server);
     }

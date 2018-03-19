@@ -15,6 +15,79 @@ namespace Swoft\Console\Helper;
 class ConsoleUtil
 {
     /**
+     * 与文本进度条相比，没有 total
+     *
+     * ```php
+     *  $total = 120;
+     *  $ctt = ConsoleUtil::counterTxt('doing ...', 'completed.');
+     *  $this->write('Counter:');
+     *  while ($total - 1) {
+     *      $ctt->send(1);
+     *      usleep(30000);
+     *      $total--;
+     *  }
+     *  // end of the counter.
+     *  $ctt->send(-1);
+     * ```
+     * @param string $msg
+     * @param string|null $doneMsg
+     * @return \Generator
+     */
+    public static function counterTxt(string $msg, $doneMsg = null)
+    {
+        $counter = 0;
+        $finished = false;
+        $tpl = (CommandHelper::supportColor() ? "\x0D\x1B[2K" : "\x0D\r") . '%d %s';
+        $msg = style()->t($msg);
+        $doneMsg = $doneMsg ? style()->t($doneMsg) : null;
+        while (true) {
+            if ($finished) {
+                return;
+            }
+
+            $step = yield;
+
+            if ((int)$step <= 0) {
+                $counter++;
+                $finished = true;
+                $msg = $doneMsg ?: $msg;
+            } else {
+                $counter += $step;
+            }
+
+            printf($tpl, $counter, $msg);
+
+            if ($finished) {
+                echo "\n";
+                break;
+            }
+        }
+
+        yield false;
+    }
+
+    /**
+     * read CLI input
+     * @param mixed $message
+     * @param bool $nl
+     * @param array $opts
+     * [
+     *   'stream' => \STDIN
+     * ]
+     * @return string
+     */
+    public static function read($message = null, $nl = false, array $opts = []): string
+    {
+        if ($message) {
+            \output()->writeln($message, $nl);
+        }
+
+        $stream = $opts['stream'] ?? \STDIN;
+
+        return trim(fgets($stream));
+    }
+
+    /**
      * 确认, 发出信息要求确认
      * @param string $question 发出的信息
      * @param bool $default Default value
