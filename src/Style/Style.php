@@ -3,6 +3,7 @@
 namespace Swoft\Console\Style;
 
 use Swoft\Bean\Annotation\Bean;
+use Swoft\Console\Helper\CommandHelper;
 
 /**
  * The style of command
@@ -85,7 +86,7 @@ class Style
     public function t(string $message)
     {
         // 不支持颜色，移除颜色标签
-        if (! $this->isSupportColor()) {
+        if (!CommandHelper::supportColor()) {
             return $this->stripColor($message);
         }
 
@@ -150,42 +151,18 @@ class Style
      * @param string $message
      * @return mixed
      */
-    private function stripColor(string $message)
+    public function stripColor(string $message)
     {
         return preg_replace(self::STRIP_REG, '', $message);
     }
 
     /**
-     * 命令行是否支持颜色
-     *
-     * @return bool
+     * @param string $text
+     * @param string $tag
+     * @return string
      */
-    private function isSupportColor(): bool
+    public static function wrap(string $text, string $tag = 'info'): string
     {
-        if (DIRECTORY_SEPARATOR === '\\') {
-            $term = 'xterm' === getenv('TERM');
-            $ansicon = false !== getenv('ANSICON');
-            $conEmuAnsi = 'ON' === getenv('ConEmuANSI');
-            $windowsVersion = '10.0.10586' === PHP_WINDOWS_VERSION_MAJOR . '.' . PHP_WINDOWS_VERSION_MINOR . '.' . PHP_WINDOWS_VERSION_BUILD;
-            $isSupport = $windowsVersion || $ansicon || $conEmuAnsi || $term;
-            return $isSupport;
-        }
-
-        if (! \defined('STDOUT')) {
-            return false;
-        }
-
-        return $this->isInteractive(STDOUT);
-    }
-
-    /**
-     * 是否是交互是终端
-     *
-     * @param mixed $fileDescriptor
-     * @return bool
-     */
-    private function isInteractive($fileDescriptor): bool
-    {
-        return \function_exists('posix_isatty') && @posix_isatty($fileDescriptor);
+        return \sprintf('<%s>%s</%s>', $tag, $text, $tag);
     }
 }
