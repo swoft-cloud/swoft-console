@@ -8,14 +8,46 @@
 
 namespace Swoft\Console\Helper;
 
+use Swoft\Console\Style\Style;
+
 /**
  * Class ConsoleUtil
  * @package Swoft\Console\Helper
  */
 class ConsoleUtil
 {
+    const LOG_LEVEL2TAG = [
+        'info' => 'info',
+        'warn' => 'warning',
+        'warning' => 'warning',
+        'debug' => 'cyan',
+        'notice' => 'notice',
+        'error' => 'error',
+    ];
+
     /**
-     * 与文本进度条相比，没有 total
+     * print log to console
+     * @param string $msg
+     * @param array $data
+     * @param string $type
+     */
+    public static function log(string $msg, array $data = [], string $type = 'info')
+    {
+        if (isset(self::LOG_LEVEL2TAG[$type])) {
+            $type = Style::wrap(\strtoupper($type), self::LOG_LEVEL2TAG[$type]);
+        }
+
+        \output()->writeln(\sprintf(
+            '%s [%s] %s %s',
+            \date('Y/m/d H:i:s'),
+            $type,
+            \trim($msg),
+            $data ? PHP_EOL . \json_encode($data, \JSON_UNESCAPED_SLASHES|\JSON_PRETTY_PRINT) : ''
+        ));
+    }
+
+    /**
+     * 与文本进度条相比，没有 total - 不会显示进度百分比
      *
      * ```php
      *  $total = 120;
