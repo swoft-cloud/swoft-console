@@ -30,17 +30,37 @@ class ConsoleUtil
      * @param string $msg
      * @param array $data
      * @param string $type
+     * @param array $opts
+     * [
+     *  '_category' => 'application',
+     *  'process' => 'work',
+     *  'pid' => 234,
+     *  'coId' => 12,
+     * ]
      */
-    public static function log(string $msg, array $data = [], string $type = 'info')
+    public static function log(string $msg, array $data = [], string $type = 'info', array $opts = [])
     {
         if (isset(self::LOG_LEVEL2TAG[$type])) {
             $type = Style::wrap(\strtoupper($type), self::LOG_LEVEL2TAG[$type]);
         }
 
+        $userOpts = [];
+
+        foreach ($opts as $n => $v) {
+            if (\is_numeric($n) || $n[0] === '_') {
+                $userOpts[] = "[$v]";
+            } else {
+                $userOpts[] = "[$n:$v]";
+            }
+        }
+
+        $optString = $userOpts ? ' ' . \implode(' ', $userOpts) : '';
+
         \output()->writeln(\sprintf(
-            '%s [%s] %s %s',
+            '%s [%s]%s %s %s',
             \date('Y/m/d H:i:s'),
             $type,
+            $optString,
             \trim($msg),
             $data ? PHP_EOL . \json_encode($data, \JSON_UNESCAPED_SLASHES|\JSON_PRETTY_PRINT) : ''
         ));
