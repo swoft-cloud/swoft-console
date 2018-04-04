@@ -2,7 +2,7 @@
 
 Swoft Console Component
 
-# Install
+## Install
 
 - composer command
 
@@ -10,10 +10,10 @@ Swoft Console Component
 composer require swoft/console
 ```
 
-# Document
+## Document
 
 Please see [document site](https://doc.swoft.org)
 
-# LICENSE
+## LICENSE
 
 The Component is open-sourced software licensed under the [Apache license](LICENSE).
