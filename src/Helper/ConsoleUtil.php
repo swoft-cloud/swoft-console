@@ -8,14 +8,66 @@
 
 namespace Swoft\Console\Helper;
 
+use Swoft\Console\Style\Style;
+
 /**
  * Class ConsoleUtil
  * @package Swoft\Console\Helper
  */
 class ConsoleUtil
 {
+    const LOG_LEVEL2TAG = [
+        'info' => 'info',
+        'warn' => 'warning',
+        'warning' => 'warning',
+        'debug' => 'cyan',
+        'notice' => 'notice',
+        'error' => 'error',
+    ];
+
     /**
-     * 与文本进度条相比，没有 total
+     * print log to console
+     * @param string $msg
+     * @param array $data
+     * @param string $type
+     * @param array $opts
+     * [
+     *  '_category' => 'application',
+     *  'process' => 'work',
+     *  'pid' => 234,
+     *  'coId' => 12,
+     * ]
+     */
+    public static function log(string $msg, array $data = [], string $type = 'info', array $opts = [])
+    {
+        if (isset(self::LOG_LEVEL2TAG[$type])) {
+            $type = Style::wrap(\strtoupper($type), self::LOG_LEVEL2TAG[$type]);
+        }
+
+        $userOpts = [];
+
+        foreach ($opts as $n => $v) {
+            if (\is_numeric($n) || $n[0] === '_') {
+                $userOpts[] = "[$v]";
+            } else {
+                $userOpts[] = "[$n:$v]";
+            }
+        }
+
+        $optString = $userOpts ? ' ' . \implode(' ', $userOpts) : '';
+
+        \output()->writeln(\sprintf(
+            '%s [%s]%s %s %s',
+            \date('Y/m/d H:i:s'),
+            $type,
+            $optString,
+            \trim($msg),
+            $data ? PHP_EOL . \json_encode($data, \JSON_UNESCAPED_SLASHES|\JSON_PRETTY_PRINT) : ''
+        ));
+    }
+
+    /**
+     * 与文本进度条相比，没有 total - 不会显示进度百分比
      *
      * ```php
      *  $total = 120;
