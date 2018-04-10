@@ -16,7 +16,6 @@ class Console implements ConsoleInterface
      */
     public function __construct()
     {
-        Coroutine::initTid();
         $this->registerMapping();
     }
 
