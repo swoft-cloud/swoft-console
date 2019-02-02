@@ -5,14 +5,16 @@ namespace Swoft\Console\Router;
 use Swoft\Http\Message\Router\HandlerMappingInterface;
 
 /**
- * Handler mapping
+ * Class Router
+ * @since 2.0
+ * @package Swoft\Console\Router
  */
-class HandlerMapping implements HandlerMappingInterface
+class Router implements HandlerMappingInterface
 {
     /**
      * default commands
      */
-    const DEFAULT_METHODS = [
+    public const DEFAULT_METHODS = [
         'start',
         'reload',
         'stop',

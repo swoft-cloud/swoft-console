@@ -3,35 +3,37 @@
 namespace Swoft\Console\Router;
 
 use Swoft\App;
-use Swoft\Bean\Annotation\Bean;
+use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\BeanFactory;
 use Swoft\Bootstrap\Boots\Bootable;
 use Swoft\Bootstrap\Boots\InitPhpEnv;
 use Swoft\Bootstrap\Boots\LoadEnv;
 use Swoft\Bootstrap\Boots\LoadInitConfiguration;
+use Swoft\Co;
 use Swoft\Console\Input\Input;
 use Swoft\Console\Output\Output;
 use Swoft\Core\Coroutine;
 use Swoft\Core\RequestContext;
-use Swoft\Helper\PhpHelper;
+use Swoft\Stdlib\Helper\PhpHelper;
 
 /**
  * The adapter of command
  * @Bean()
  */
-class HandlerAdapter
+class Dispatcher
 {
     /**
      * @param array $handler
      * @return void
      * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function doHandler(array $handler)
     {
         list($className, $method, $coroutine, $server) = $handler;
 
         $bindParams = $this->getBindParams($className, $method);
-        $class = App::getBean($className);
+        $class = \Swoft::getBean($className);
         if ($coroutine) {
             $this->executeCommandByCoroutine($class, $method, $server, $bindParams);
         } else {
@@ -40,7 +42,7 @@ class HandlerAdapter
     }
 
     /**
-     * get binded params
+     * get bounded params
      *
      * @param string $className
      * @param string $methodName
@@ -66,9 +68,8 @@ class HandlerAdapter
 
             /**
              * defined type of the param
-             * @notice \ReflectType::getName() is not supported in PHP 7.0, that is why use __toString()
              */
-            $type = $reflectType->__toString();
+            $type = $reflectType->getName();
             if ($type === Output::class) {
                 $bindParams[$key] = \output();
             } elseif ($type === Input::class) {
@@ -91,7 +92,7 @@ class HandlerAdapter
      */
     private function executeCommandByCoroutine($class, string $method, bool $server, $bindParams)
     {
-        Coroutine::create(function () use ($class, $method, $server, $bindParams) {
+        Co::create(function () use ($class, $method, $server, $bindParams) {
             $this->beforeCommand(\get_parent_class($class), $method, $server);
             PhpHelper::call([$class, $method], $bindParams);
             $this->afterCommand($method, $server);

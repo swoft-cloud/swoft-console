@@ -2,7 +2,7 @@
 
 namespace Swoft\Console\Output;
 
-use Swoft\Bean\Annotation\Bean;
+use Swoft\Bean\Annotation\Mapping\Bean;
 
 /**
  * 输出

@@ -1,19 +1,36 @@
 <?php
 
-namespace Swoft\Console\Bean\Annotation;
+namespace Swoft\Console\Annotation\Mapping;
+
+use Doctrine\Common\Annotations\Annotation\Target;
+use Doctrine\Common\Annotations\Annotation\Attribute;
+use Doctrine\Common\Annotations\Annotation\Attributes;
 
 /**
  * The annotation of command
  *
  * @Annotation
  * @Target("CLASS")
+ * @Attributes(
+ *     @Attribute("name", type="string")
+ *     @Attribute("alias", type="string")
+ * )
  */
 class Command
 {
     /**
+     * Command group name
+     *
      * @var string
      */
     private $name = '';
+
+    /**
+     * Command group name alias
+     *
+     * @var string
+     */
+    private $alias = '';
 
     /**
      * @var bool
@@ -26,11 +43,6 @@ class Command
     private $coroutine = true;
 
     /**
-     * @var bool
-     */
-    private $server = false;
-
-    /**
      * Command constructor.
      *
      * @param array $values
@@ -38,11 +50,13 @@ class Command
     public function __construct(array $values)
     {
         if (isset($values['value'])) {
-            $this->name = $values['value'];
+            $this->name = (string)$values['value'];
+        } elseif (isset($values['name'])) {
+            $this->name = (string)$values['name'];
         }
 
-        if (isset($values['name'])) {
-            $this->name = $values['name'];
+        if (isset($values['alias'])) {
+            $this->alias = (string)$values['alias'];
         }
 
         if (isset($values['coroutine'])) {
@@ -51,10 +65,6 @@ class Command
 
         if (isset($values['enabled'])) {
             $this->enabled = (bool)$values['enabled'];
-        }
-
-        if (isset($values['server'])) {
-            $this->server = $values['server'];
         }
     }
 
@@ -77,16 +87,16 @@ class Command
     /**
      * @return bool
      */
-    public function isServer(): bool
-    {
-        return $this->server;
-    }
-
-    /**
-     * @return bool
-     */
     public function isEnabled(): bool
     {
         return $this->enabled;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAlias(): string
+    {
+        return $this->alias;
     }
 }

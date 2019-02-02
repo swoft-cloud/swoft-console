@@ -2,14 +2,12 @@
 
 namespace Swoft\Console;
 
-use Swoft\App;
-use Swoft\Console\Bean\Collector\CommandCollector;
-use Swoft\Core\Coroutine;
-
 /**
- * Console
+ * Class Application
+ * @since 2.0
+ * @package Swoft\Console
  */
-class Console implements ConsoleInterface
+class Application implements ConsoleInterface
 {
     /**
      * Console constructor.
@@ -22,11 +20,11 @@ class Console implements ConsoleInterface
     /**
      * @return void
      */
-    public function run()
+    public function run(): void
     {
         try {
             /* @var \Swoft\Console\Command $command */
-            $command = App::getBean('command');
+            $command = \Swoft::getBean('command');
             $command->run();
         } catch (\Throwable $e) {
             \output()->writeln(sprintf('<error>%s</error>', $e->getMessage()), true, false);

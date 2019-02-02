@@ -1,6 +1,6 @@
 <?php
 
-namespace Swoft\Console\Output;
+namespace Swoft\Console\Contract;
 
 /**
  * 输出接口

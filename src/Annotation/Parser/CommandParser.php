@@ -2,38 +2,39 @@
 
 namespace Swoft\Console\Bean\Parser;
 
-use Swoft\Bean\Annotation\Scope;
-use Swoft\Bean\Parser\AbstractParser;
-use Swoft\Console\Bean\Annotation\Command;
-use Swoft\Console\Bean\Collector\CommandCollector;
+use Swoft\Annotation\Annotation\Mapping\AnnotationParser;
+use Swoft\Annotation\Annotation\Parser\Parser;
+use Swoft\Console\Annotation\Mapping\Command;
+
 
 /**
- * the parser of command
+ * Class CommandParser
  *
- * @uses      CommandParser
- * @version   2018年01月22日
- * @author    stelin <phpcrazy@126.com>
- * @copyright Copyright 2010-2016 swoft software
- * @license   PHP Version 7.x {@link http://www.php.net/license/3_0.txt}
+ * @since 2.0
+ * @package Swoft\Console\Bean\Parser
+ *
+ * @AnnotationParser(Command::class)
  */
-class CommandParser extends AbstractParser
+class CommandParser extends Parser
 {
     /**
-     * @param string $className
-     * @param Command $objectAnnotation
-     * @param string $propertyName
-     * @param string $methodName
-     *
-     * @param null $propertyValue
-     * @return mixed
+     * @var array
      */
-    public function parser(string $className, $objectAnnotation = null, string $propertyName = '', string $methodName = '', $propertyValue = null)
+    private static $commands = [];
+
+    /**
+     * Parse object
+     *
+     * @param int    $type Class or Method or Property
+     * @param Command $annotationObject Annotation object
+     *
+     * @return array
+     * Return empty array is nothing to do!
+     * When class type return [$beanName, $className, $scope, $alias, $size] is to inject bean
+     * When property type return [$propertyValue, $isRef] is to reference value
+     */
+    public function parse(int $type, $annotationObject): array
     {
-        $beanName = $className;
-        $scope    = Scope::SINGLETON;
-
-        CommandCollector::collect($className, $objectAnnotation, $propertyName, $methodName, $propertyValue);
-
-        return [$beanName, $scope, ''];
+        // TODO: Implement parse() method.
     }
 }

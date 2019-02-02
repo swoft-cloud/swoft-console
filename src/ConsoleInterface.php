@@ -2,13 +2,12 @@
 
 namespace Swoft\Console;
 
-interface ConsoleInterface
-{
+use Swoft\ApplicationInterface;
 
-    /**
-     * Run command
-     *
-     * @return void
-     */
-    public function run();
+/**
+ * Interface ConsoleInterface
+ * @package Swoft\Console
+ */
+interface ConsoleInterface extends ApplicationInterface
+{
 }

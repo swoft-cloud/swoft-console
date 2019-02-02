@@ -1,6 +1,6 @@
 <?php
 
-namespace Swoft\Console\Input;
+namespace Swoft\Console\Contract;
 
 /**
  * 输入接口

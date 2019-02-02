@@ -2,13 +2,13 @@
 
 namespace Swoft\Console;
 
-use Swoft\App;
-use Swoft\Bean\Annotation\Bean;
+use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Console\Bean\Collector\CommandCollector;
 use Swoft\Console\Helper\DocBlockHelper;
 use Swoft\Console\Router\HandlerAdapter;
-use Swoft\Console\Router\HandlerMapping;
-use Swoft\Helper\StringHelper;
+use Swoft\Console\Router\Router;
+use Swoft\Stdlib\Helper\StringHelper;
+use function input;
 
 /**
  * @Bean("command")
@@ -16,7 +16,7 @@ use Swoft\Helper\StringHelper;
 class Command
 {
     // name -> {name}
-    const ANNOTATION_VAR = '{%s}'; // '{$%s}';
+    protected const ANNOTATION_VAR = '{%s}'; // '{$%s}';
 
     /**
      * 为命令注解提供可解析解析变量. 可以在命令的注释中使用
@@ -40,7 +40,7 @@ class Command
      * @throws \InvalidArgumentException
      * @throws \ReflectionException
      */
-    public function run()
+    public function run(): void
     {
         if (!$cmd = \input()->getCommand()) {
             $this->baseCommand();
@@ -48,8 +48,8 @@ class Command
             return;
         }
 
-        /* @var HandlerMapping $router */
-        $router = App::getBean('commandRoute');
+        /* @var Router $router */
+        $router = \Swoft::getBean('commandRoute');
 
         if (!$handler = $router->getHandler()) {
             \output()->colored("The entered command does not exist! command = $cmd", 'error');
@@ -211,7 +211,7 @@ class Command
     private function showVersion()
     {
         // 当前版本信息
-        $swoftVersion = App::version();
+        $swoftVersion = \Swoft::VERSION;
         $phpVersion = PHP_VERSION;
         $swooleVersion = SWOOLE_VERSION;
 

@@ -2,18 +2,34 @@
 
 namespace Swoft\Console\Bean\Annotation;
 
+use Doctrine\Common\Annotations\Annotation\Target;
+use Doctrine\Common\Annotations\Annotation\Attribute;
+use Doctrine\Common\Annotations\Annotation\Attributes;
+
 /**
- * The annotation of mapping
+ * The annotation of command mapping
  *
  * @Annotation
  * @Target({"METHOD"})
+ * @Attributes(
+ *     @Attribute("name", type="string")
+ * )
  */
 class Mapping
 {
     /**
+     * Command name
+     *
      * @var string
      */
     private $name = '';
+
+    /**
+     * Command name alias
+     *
+     * @var string
+     */
+    private $alias = '';
 
     /**
      * Mapping constructor.
@@ -23,10 +39,13 @@ class Mapping
     public function __construct(array $values)
     {
         if (isset($values['value'])) {
-            $this->name = $values['value'];
+            $this->name = (string)$values['value'];
+        } elseif (isset($values['name'])) {
+            $this->name = (string)$values['name'];
         }
-        if (isset($values['name'])) {
-            $this->name = $values['name'];
+
+        if (isset($values['alias'])) {
+            $this->alias = (string)$values['alias'];
         }
     }
 
@@ -36,5 +55,13 @@ class Mapping
     public function getName(): string
     {
         return $this->name;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAlias(): string
+    {
+        return $this->alias;
     }
 }
