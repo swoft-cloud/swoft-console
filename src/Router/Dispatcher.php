@@ -18,7 +18,7 @@ use Swoft\Stdlib\Helper\PhpHelper;
 
 /**
  * The adapter of command
- * @Bean()
+ * @Bean("consoleDispatcher")
  */
 class Dispatcher
 {

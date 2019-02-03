@@ -38,7 +38,7 @@ class ConsoleUtil
      *  'coId' => 12,
      * ]
      */
-    public static function log(string $msg, array $data = [], string $type = 'info', array $opts = [])
+    public static function log(string $msg, array $data = [], string $type = 'info', array $opts = []): void
     {
         if (isset(self::LOG_LEVEL2TAG[$type])) {
             $type = Style::wrap(\strtoupper($type), self::LOG_LEVEL2TAG[$type]);

@@ -2,14 +2,16 @@
 
 namespace Swoft\Console\Router;
 
-use Swoft\Http\Message\Router\HandlerMappingInterface;
+use Swoft\Bean\Annotation\Mapping\Bean;
 
 /**
  * Class Router
  * @since 2.0
  * @package Swoft\Console\Router
+ *
+ * @Bean("consoleRouter")
  */
-class Router implements HandlerMappingInterface
+class Router //implements HandlerMappingInterface
 {
     /**
      * default commands
@@ -28,11 +30,13 @@ class Router implements HandlerMappingInterface
 
     /**
      * the default group of command
+     * @var string
      */
     private $defaultGroup = 'server';
 
     /**
      * the default command
+     * @var string
      */
     private $defaultCommand = 'index';
 
@@ -43,66 +47,97 @@ class Router implements HandlerMappingInterface
      */
     private $delimiter = ':';
 
-
     /**
      * @var array
+     * [
+     *  route => [
+     *      'handler' => [command class, method],
+     *      'options' => [],
+     *  ]
+     * ]
      */
-    private $routes = [];
+    private $commands = [];
 
     /**
-     * @param array ...$params
-     * @return mixed
-     * @throws \InvalidArgumentException
+     * @var array [alias => real name]
      */
-    public function getHandler(...$params): array
-    {
-        list($group, $command) = $this->getGroupAndCommand();
-        $route = $this->getCommandString($group, $command);
-
-        return $this->match($route);
-    }
+    private $groupAliases = [];
 
     /**
-     * Auto register routes
-     *
-     * @param array $commandMapping
+     * @var array [alias => real name]
      */
-    public function register(array $commandMapping)
+    private $commandAliases = [];
+
+    /**
+     * @param string         $group
+     * @param string         $command
+     * @param mixed|callable $handler
+     * @param array          $options
+     */
+    public function map(string $group, string $command, $handler, array $options = []): void
     {
-        foreach ($commandMapping as $className => $mapping) {
-            $prefix = $mapping['name'];
-            $routes = $mapping['routes'];
-            $coroutine = $mapping['coroutine'];
-            $server = $mapping['server'];
-            $prefix = $this->getPrefix($prefix, $className);
-            $this->registerRoute($className, $routes, $prefix, $coroutine, $server);
+        $route = $this->buildRoute($group, $command);
+
+        if ($alias = $options['alias'] ?? '') {
+            $this->setCommandAlias($command, $alias);
         }
+
+        $this->commands[$route] = [
+            'handler' => $handler,
+            'options' => $options,
+        ];
     }
 
-    /**
-     * @param string $comamnd
-     * @return bool
-     */
-    public function isDefaultCommand(string $comamnd): bool
+    public function setGroupAlias(string $group, string $alias): void
     {
-        return $comamnd === $this->defaultCommand;
+        $this->groupAliases[$alias] = $group;
+    }
+
+    public function setCommandAlias(string $command, string $alias): void
+    {
+        $this->commandAliases[$alias] = $command;
     }
 
     /**
+     * Match route
+     *
+     * @param array $params [$route]
      * @return array
      */
-    private function getGroupAndCommand(): array
+    public function match(...$params): array
     {
-        $cmd = input()->getCommand();
+        [$group, $command] = $this->getGroupAndCommand($params[0]);
+        // build
+        $route = $this->buildRoute($group, $command);
+
+        return $this->commands[$route] ?? [];
+    }
+
+    /**
+     * @param string $command
+     * @return bool
+     */
+    public function isDefault(string $command): bool
+    {
+        return $command === $this->defaultCommand;
+    }
+
+    /**
+     * @param string $cmd
+     * @return array
+     */
+    private function getGroupAndCommand(string $cmd): array
+    {
         if (\in_array($cmd, self::DEFAULT_METHODS, true)) {
             return [$this->defaultGroup, $cmd];
         }
 
-        $commandAry = explode($this->delimiter, $cmd);
-        if (\count($commandAry) >= 2) {
-            list($group, $command) = $commandAry;
+        $delimiter  = $this->delimiter;
+        $commandAry = \explode($delimiter, \trim($cmd, "$delimiter "), 2);
+        if (\count($commandAry) === 2) {
+            [$group, $command] = $commandAry;
         } else {
-            list($group) = $commandAry;
+            [$group] = $commandAry;
             $command = '';
         }
 
@@ -118,48 +153,6 @@ class Router implements HandlerMappingInterface
     }
 
     /**
-     * Match route
-     *
-     * @param $route
-     * @return mixed
-     * @throws \InvalidArgumentException
-     */
-    public function match(string $route): array
-    {
-        if (!isset($this->routes[$route])) {
-            return [];
-        }
-
-        return $this->routes[$route];
-    }
-
-    /**
-     * Register one route
-     *
-     * @param string $className
-     * @param array  $routes
-     * @param string $prefix
-     * @param bool   $coroutine
-     * @param bool   $server
-     */
-    private function registerRoute(string $className, array $routes, string $prefix, bool $coroutine, $server)
-    {
-        foreach ($routes as $route) {
-            $mappedName = $route['mappedName'];
-            $methodName = $route['methodName'];
-            if (empty($mappedName)) {
-                $mappedName = $methodName;
-            }
-
-            $commandKey = $this->getCommandString($prefix, $mappedName);
-            $this->routes[$commandKey] = [$className, $methodName, $coroutine, $server];
-        }
-
-        $commandKey = $this->getCommandString($prefix, $this->defaultCommand);
-        $this->routes[$commandKey] = [$className, $this->defaultCommand];
-    }
-
-    /**
      * Get command from class name
      *
      * @param string $prefix
@@ -169,12 +162,12 @@ class Router implements HandlerMappingInterface
     public function getPrefix(string $prefix, string $className): string
     {
         // the  prefix of annotation is exist
-        if (! empty($prefix)) {
+        if (!empty($prefix)) {
             return $prefix;
         }
 
         // the prefix of annotation is empty
-        $reg = '/^.*\\\(\w+)' . $this->suffix . '$/';
+        $reg    = '/^.*\\\(\w+)' . $this->suffix . '$/';
         $prefix = '';
 
         if ($result = preg_match($reg, $className, $match)) {
@@ -189,8 +182,44 @@ class Router implements HandlerMappingInterface
      * @param string $command
      * @return string
      */
-    private function getCommandString(string $group, string $command): string
+    public function buildRoute(string $group, string $command): string
     {
-        return sprintf('%s%s%s', $group, $this->delimiter, $command);
+        if ($group) {
+            return \sprintf('%s%s%s', $group, $this->delimiter, $command);
+        }
+
+        return $command;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSuffix(): string
+    {
+        return $this->suffix;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDefaultCommand(): string
+    {
+        return $this->defaultCommand;
+    }
+
+    /**
+     * @return array
+     */
+    public function getGroupAliases(): array
+    {
+        return $this->groupAliases;
+    }
+
+    /**
+     * @param array $groupAliases
+     */
+    public function setGroupAliases(array $groupAliases): void
+    {
+        $this->groupAliases = $groupAliases;
     }
 }

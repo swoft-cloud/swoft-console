@@ -3,6 +3,7 @@
 namespace Swoft\Console\Output;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Console\Contract\OutputInterface;
 
 /**
  * 输出
@@ -67,7 +68,7 @@ class Output implements OutputInterface
      * @param string $text
      * @param string $tag
      */
-    public function colored(string $text, string $tag = 'info')
+    public function colored(string $text, string $tag = 'info'): void
     {
         $this->writeln(\sprintf('<%s>%s</%s>', $tag, $text, $tag));
     }

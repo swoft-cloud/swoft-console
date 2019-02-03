@@ -7,16 +7,16 @@ use Doctrine\Common\Annotations\Annotation\Attribute;
 use Doctrine\Common\Annotations\Annotation\Attributes;
 
 /**
- * The annotation of command
+ * The annotation of command controller
  *
  * @Annotation
  * @Target("CLASS")
  * @Attributes(
- *     @Attribute("name", type="string")
+ *     @Attribute("name", type="string"),
  *     @Attribute("alias", type="string")
  * )
  */
-class Command
+final class Command
 {
     /**
      * Command group name

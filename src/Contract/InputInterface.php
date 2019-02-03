@@ -3,7 +3,8 @@
 namespace Swoft\Console\Contract;
 
 /**
- * 输入接口
+ * Interface InputInterface
+ * @package Swoft\Console\Contract
  */
 interface InputInterface
 {
@@ -14,7 +15,7 @@ interface InputInterface
      * @param  bool   $nl       true 会添加换行符 false 原样输出，不添加换行符
      * @return string
      */
-    public function read($question = null, $nl = false): string;
+    public function read(string $question = '', bool $nl = false): string;
 
     /**
      * 获取执行的脚本
@@ -26,10 +27,9 @@ interface InputInterface
     /**
      * 获取执行的命令
      *
-     * @param string $default
      * @return string
      */
-    public function getCommand($default = ''): string;
+    public function getCommand(): string;
 
     /**
      * 获取输入参数集合

@@ -8,14 +8,16 @@ use Doctrine\Common\Annotations\Annotation\Attributes;
 
 /**
  * The annotation of command mapping
+ * @since 2.0
  *
  * @Annotation
  * @Target({"METHOD"})
  * @Attributes(
- *     @Attribute("name", type="string")
+ *     @Attribute("name", type="string"),
+ *     @Attribute("alias", type="string")
  * )
  */
-class Mapping
+final class CommandMapping
 {
     /**
      * Command name
