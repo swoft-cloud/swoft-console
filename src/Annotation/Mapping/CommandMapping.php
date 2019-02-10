@@ -1,6 +1,6 @@
 <?php
 
-namespace Swoft\Console\Bean\Annotation;
+namespace Swoft\Console\Annotation\Mapping;
 
 use Doctrine\Common\Annotations\Annotation\Target;
 use Doctrine\Common\Annotations\Annotation\Attribute;

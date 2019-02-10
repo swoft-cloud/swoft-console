@@ -2,6 +2,7 @@
 
 namespace Swoft\Console;
 
+use Swoft\Console\Router\Dispatcher;
 use Swoft\Console\Router\Router;
 use Swoft\Helper\ComposerJSON;
 use Swoft\SwoftComponent;
@@ -37,11 +38,20 @@ class AutoLoader extends SwoftComponent
         return ComposerJSON::open($jsonFile)->getMetadata();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function coreBean(): array
     {
         return [
-            'consoleRouter' => [
+            'consoleApp'        => [
+                'class' => Application::class,
+            ],
+            'consoleRouter'     => [
                 'class' => Router::class,
+            ],
+            'consoleDispatcher' => [
+                'class' => Dispatcher::class,
             ],
         ];
     }

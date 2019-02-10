@@ -28,7 +28,7 @@ class Dispatcher
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
      */
-    public function doHandler(array $handler)
+    public function dispatch(array $handler): void
     {
         list($className, $method, $coroutine, $server) = $handler;
 

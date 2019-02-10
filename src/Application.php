@@ -4,6 +4,7 @@ namespace Swoft\Console;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Console\Bean\Collector\CommandCollector;
+use Swoft\Console\Contract\ConsoleInterface;
 use Swoft\Console\Helper\DocBlockHelper;
 use Swoft\Console\Router\Dispatcher;
 use Swoft\Console\Router\Router;
@@ -37,7 +38,7 @@ class Application implements ConsoleInterface
         try {
             $this->doRun();
         } catch (\Throwable $e) {
-            \output()->writeln(sprintf('<error>%s</error>', $e->getMessage()), true, false);
+            \output()->writeln(sprintf('<error>%s</error>', $e->getMessage()));
             \output()->writeln(sprintf("Trace:\n%s", $e->getTraceAsString()), true, true);
         }
     }
@@ -55,7 +56,7 @@ class Application implements ConsoleInterface
             'workDir'     => input()->getPwd(),
             'script'      => input()->getScript(), // bin/app
             'command'     => input()->getCommand(), // demo OR home:test
-            'fullCommand' => input()->getScript() . ' ' . input()->getCommand(),
+            'fullCommand' => input()->getFullCommand(),
         ];
     }
 
@@ -87,31 +88,30 @@ class Application implements ConsoleInterface
 
         if ($router->isDefault($method)) {
             $this->indexCommand($className);
-
             return;
         }
 
-        $isHelp = input()->hasOpt('h') || input()->hasOpt('help');
-        if ($isHelp) {
+        // show help
+        if (input()->getSameOpt(['h', 'help'])) {
             $this->showCommandHelp($className, $method);
             return;
         }
 
-
-        /* @var Dispatcher $adapter */
-        $adapter = \Swoft::getBean(Dispatcher::class);
-        $adapter->doHandler($handler);
+        /* @var Dispatcher $dispatcher */
+        $dispatcher = \Swoft::getBean(Dispatcher::class);
+        $dispatcher->dispatch($handler);
     }
 
     /**
      * @param string $className
      * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      * @return void
      */
-    private function indexCommand(string $className)
+    private function indexCommand(string $className): void
     {
-        /* @var HandlerMapping $router */
-        $router = App::getBean('commandRoute');
+        /* @var Router $router */
+        $router = \Swoft::getBean('consoleRouter');
 
         $collector = CommandCollector::getCollector();
         $routes    = $collector[$className]['routes'] ?? [];
@@ -161,7 +161,7 @@ class Application implements ConsoleInterface
      * @param string $commandMethod
      * @throws \ReflectionException
      */
-    private function showCommandHelp(string $controllerClass, string $commandMethod)
+    private function showCommandHelp(string $controllerClass, string $commandMethod): void
     {
         // 反射获取方法描述
         $reflectionClass  = new \ReflectionClass($controllerClass);
@@ -208,7 +208,7 @@ class Application implements ConsoleInterface
      * @param bool $showLogo
      * @throws \ReflectionException
      */
-    public function showCommandList(bool $showLogo = true)
+    public function showCommandList(bool $showLogo = true): void
     {
         $commands = $this->parserCmdAndDesc();
 
@@ -233,12 +233,12 @@ class Application implements ConsoleInterface
     /**
      * version
      */
-    private function showVersion()
+    private function showVersion(): void
     {
         // 当前版本信息
         $swoftVersion  = \Swoft::VERSION;
-        $phpVersion    = PHP_VERSION;
-        $swooleVersion = SWOOLE_VERSION;
+        $phpVersion    = \PHP_VERSION;
+        $swooleVersion = \SWOOLE_VERSION;
 
         // 显示面板
         \output()->writeLogo();

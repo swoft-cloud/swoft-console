@@ -56,7 +56,7 @@ class Router //implements HandlerMappingInterface
      *  ]
      * ]
      */
-    private $commands = [];
+    private $routes = [];
 
     /**
      * @var array [alias => real name]
@@ -82,17 +82,25 @@ class Router //implements HandlerMappingInterface
             $this->setCommandAlias($command, $alias);
         }
 
-        $this->commands[$route] = [
+        $this->routes[$route] = [
             'handler' => $handler,
             'options' => $options,
         ];
     }
 
+    /**
+     * @param string $group
+     * @param string $alias
+     */
     public function setGroupAlias(string $group, string $alias): void
     {
         $this->groupAliases[$alias] = $group;
     }
 
+    /**
+     * @param string $command
+     * @param string $alias
+     */
     public function setCommandAlias(string $command, string $alias): void
     {
         $this->commandAliases[$alias] = $command;
@@ -110,16 +118,7 @@ class Router //implements HandlerMappingInterface
         // build
         $route = $this->buildRoute($group, $command);
 
-        return $this->commands[$route] ?? [];
-    }
-
-    /**
-     * @param string $command
-     * @return bool
-     */
-    public function isDefault(string $command): bool
-    {
-        return $command === $this->defaultCommand;
+        return $this->routes[$route] ?? [];
     }
 
     /**
@@ -153,28 +152,30 @@ class Router //implements HandlerMappingInterface
     }
 
     /**
-     * Get command from class name
-     *
-     * @param string $prefix
-     * @param string $className
+     * @param string $alias
      * @return string
      */
-    public function getPrefix(string $prefix, string $className): string
+    public function getGroupName(string $alias): string
     {
-        // the  prefix of annotation is exist
-        if (!empty($prefix)) {
-            return $prefix;
-        }
+        return $this->groupAliases[$alias] ?? $alias;
+    }
 
-        // the prefix of annotation is empty
-        $reg    = '/^.*\\\(\w+)' . $this->suffix . '$/';
-        $prefix = '';
+    /**
+     * @param string $alias
+     * @return string
+     */
+    public function getCommandName(string $alias): string
+    {
+        return $this->commandAliases[$alias] ?? $alias;
+    }
 
-        if ($result = preg_match($reg, $className, $match)) {
-            $prefix = lcfirst($match[1]);
-        }
-
-        return $prefix;
+    /**
+     * @param string $command
+     * @return bool
+     */
+    public function isDefault(string $command): bool
+    {
+        return $command === $this->defaultCommand;
     }
 
     /**
@@ -216,10 +217,18 @@ class Router //implements HandlerMappingInterface
     }
 
     /**
-     * @param array $groupAliases
+     * @return array
      */
-    public function setGroupAliases(array $groupAliases): void
+    public function getCommandAliases(): array
     {
-        $this->groupAliases = $groupAliases;
+        return $this->commandAliases;
+    }
+
+    /**
+     * @return array
+     */
+    public function getRoutes(): array
+    {
+        return $this->routes;
     }
 }
