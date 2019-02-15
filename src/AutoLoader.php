@@ -2,7 +2,6 @@
 
 namespace Swoft\Console;
 
-use Swoft\Console\Router\Dispatcher;
 use Swoft\Console\Router\Router;
 use Swoft\Helper\ComposerJSON;
 use Swoft\SwoftComponent;

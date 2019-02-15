@@ -8,11 +8,14 @@
 
 namespace Swoft\Console\Input;
 
+use Swoft\Bean\Annotation\Mapping\Bean;
 use Toolkit\Cli\Flags;
 
 /**
  * Class Input - The input information. by parse global var $argv.
- * @package Swoft\Console\Input
+ * @since 2.0
+ *
+ * @Bean(alias="consoleInput")
  */
 class Input extends AbstractInput
 {

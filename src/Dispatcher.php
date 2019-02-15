@@ -1,8 +1,7 @@
 <?php
 
-namespace Swoft\Console\Router;
+namespace Swoft\Console;
 
-use Swoft\App;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\BeanFactory;
 use Swoft\Bootstrap\Boots\Bootable;
@@ -12,12 +11,10 @@ use Swoft\Bootstrap\Boots\LoadInitConfiguration;
 use Swoft\Co;
 use Swoft\Console\Input\Input;
 use Swoft\Console\Output\Output;
-use Swoft\Core\Coroutine;
-use Swoft\Core\RequestContext;
 use Swoft\Stdlib\Helper\PhpHelper;
 
 /**
- * The adapter of command
+ * Class Dispatcher - The adapter of command
  * @Bean("consoleDispatcher")
  */
 class Dispatcher
@@ -30,7 +27,7 @@ class Dispatcher
      */
     public function dispatch(array $handler): void
     {
-        list($className, $method, $coroutine, $server) = $handler;
+        [$className, $method, $coroutine, $server] = $handler;
 
         $bindParams = $this->getBindParams($className, $method);
         $class = \Swoft::getBean($className);
@@ -158,7 +155,8 @@ class Dispatcher
             return;
         }
 
-        App::getLogger()->appendNoticeLog(true);
+        // TODO ...
+        // \Swoft::getBean('logger')->appendNoticeLog(true);
     }
 
     /**

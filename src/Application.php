@@ -53,10 +53,10 @@ class Application implements ConsoleInterface
         return [
             // 'name' => self::getName(),
             // 'group' => self::getName(),
-            'workDir'     => input()->getPwd(),
-            'script'      => input()->getScript(), // bin/app
-            'command'     => input()->getCommand(), // demo OR home:test
-            'fullCommand' => input()->getFullCommand(),
+            'workDir'     => \input()->getPwd(),
+            'script'      => \input()->getScript(), // bin/app
+            'command'     => \input()->getCommand(), // demo OR home:test
+            'fullCommand' => \input()->getFullCommand(),
         ];
     }
 

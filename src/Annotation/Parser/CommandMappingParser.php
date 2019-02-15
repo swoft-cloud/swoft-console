@@ -5,7 +5,7 @@ namespace Swoft\Console\Bean\Parser;
 use Swoft\Annotation\Annotation\Mapping\AnnotationParser;
 use Swoft\Annotation\Annotation\Parser\Parser;
 use Swoft\Annotation\AnnotationException;
-use Swoft\Console\Bean\Annotation\CommandMapping;
+use Swoft\Console\Annotation\Mapping\CommandMapping;
 
 /**
  * Class CommandMappingParser
