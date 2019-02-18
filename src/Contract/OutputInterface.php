@@ -3,31 +3,18 @@
 namespace Swoft\Console\Contract;
 
 /**
- * 输出接口
+ * Interface OutputInterface
+ * @since 1.0
  */
 interface OutputInterface
 {
     /**
-     * 输出一行数据
-     *
-     * @param string $messages 信息
-     * @param bool   $newline  是否换行
-     * @param bool   $quit     是否退出
+     * Write a message to standard output stream.
+     * @param mixed       $messages Output message
+     * @param bool        $nl true 会添加换行符 false 原样输出，不添加换行符
+     * @param int|boolean $quit If is int, setting it is exit code.
+     * @param array       $opts
+     * @return int
      */
-    public function writeln($messages = '', $newline = true, $quit = false);
-
-    /**
-     * 输出一个列表
-     *
-     * @param array       $list       列表数据
-     * @param string      $titleStyle 标题样式
-     * @param string      $cmdStyle   命令样式
-     * @param string|null $descStyle  描述样式
-     */
-    public function writeList(
-        array $list,
-        $titleStyle = 'comment',
-        string $cmdStyle = 'info',
-        string $descStyle = null
-    );
+    public function write($messages, $nl = true, $quit = false, array $opts = []): int;
 }

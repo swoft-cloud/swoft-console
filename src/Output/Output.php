@@ -1,7 +1,8 @@
 <?php
 
-namespace Inhere\Console\IO;
+namespace Swoft\Console\Output;
 
+use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Console\Concern\FormatOutputAwareTrait;
 use Swoft\Console\Style\Style;
 use Inhere\Console\Util\Show;
@@ -10,7 +11,7 @@ use Toolkit\Cli\Cli;
 
 /**
  * Class Output
- * @package Inhere\Console\IO
+ * @Bean("output")
  */
 class Output implements OutputInterface
 {

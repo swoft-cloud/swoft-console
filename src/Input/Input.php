@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: inhere
- * Date: 2016/12/7
- * Time: 19:23
- */
 
 namespace Swoft\Console\Input;
 
@@ -15,7 +9,7 @@ use Toolkit\Cli\Flags;
  * Class Input - The input information. by parse global var $argv.
  * @since 2.0
  *
- * @Bean(alias="consoleInput")
+ * @Bean("input")
  */
 class Input extends AbstractInput
 {

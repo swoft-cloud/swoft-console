@@ -48,7 +48,7 @@ trait FormatOutputAwareTrait
      */
     public function write($messages, $nl = true, $quit = false, array $opts = []): int
     {
-        return Show::write($messages, $nl, $quit, array([
+        return Show::write($messages, $nl, $quit, \array_merge([
             'flush'  => true,
             'stream' => $this->outputStream,
         ], $opts));
