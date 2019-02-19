@@ -1,12 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Inhere
- * Date: 15-4-1
- * Time: 上午10:08
- * Used:
- * file: Color.php
- */
 
 namespace Swoft\Console\Style;
 

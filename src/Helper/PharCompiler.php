@@ -7,7 +7,7 @@ use Swoft\Stdlib\Helper\Sys;
 
 /**
  * Class PharCompiler
- * @package Inhere\Console\Components
+ * @package Swoft\Consoles
  */
 class PharCompiler
 {

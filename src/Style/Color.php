@@ -1,7 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- */
 
 namespace Swoft\Console\Style;
 
