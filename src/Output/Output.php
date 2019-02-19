@@ -5,7 +5,7 @@ namespace Swoft\Console\Output;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Console\Concern\FormatOutputAwareTrait;
 use Swoft\Console\Style\Style;
-use Inhere\Console\Util\Show;
+use Swoft\Console\Helper\Show;
 use Swoft\Console\Contract\OutputInterface;
 use Toolkit\Cli\Cli;
 
