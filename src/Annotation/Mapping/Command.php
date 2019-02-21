@@ -5,6 +5,7 @@ namespace Swoft\Console\Annotation\Mapping;
 use Doctrine\Common\Annotations\Annotation\Target;
 use Doctrine\Common\Annotations\Annotation\Attribute;
 use Doctrine\Common\Annotations\Annotation\Attributes;
+use Swoft\Stdlib\Helper\Str;
 
 /**
  * The annotation of command controller
@@ -18,6 +19,16 @@ use Doctrine\Common\Annotations\Annotation\Attributes;
  */
 final class Command
 {
+    // fixed args and opts for a command/controller-command
+    public const ARG_REQUIRED = 1;
+    public const ARG_OPTIONAL = 2;
+    public const ARG_IS_ARRAY = 4;
+
+    public const OPT_BOOLEAN  = 1; // eq symfony InputOption::VALUE_NONE
+    public const OPT_REQUIRED = 2;
+    public const OPT_OPTIONAL = 4;
+    public const OPT_IS_ARRAY = 8; // allow multi value
+
     /**
      * Command group name
      *
@@ -26,11 +37,18 @@ final class Command
     private $name = '';
 
     /**
-     * Command group name alias
+     * Command group name alias. Allow add multi by ','
      *
      * @var string
      */
     private $alias = '';
+
+    /**
+     * The group description message text
+     *
+     * @var string
+     */
+    private $desc = 'no description message';
 
     /**
      * @var bool
@@ -57,6 +75,10 @@ final class Command
 
         if (isset($values['alias'])) {
             $this->alias = (string)$values['alias'];
+        }
+
+        if (isset($values['desc'])) {
+            $this->desc = (string)$values['desc'];
         }
 
         if (isset($values['coroutine'])) {
@@ -98,5 +120,21 @@ final class Command
     public function getAlias(): string
     {
         return $this->alias;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getAliases(): array
+    {
+        return Str::explode($this->alias);
+    }
+
+    /**
+     * @return string
+     */
+    public function getDesc(): string
+    {
+        return $this->desc;
     }
 }

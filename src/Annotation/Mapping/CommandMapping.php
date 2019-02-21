@@ -5,6 +5,7 @@ namespace Swoft\Console\Annotation\Mapping;
 use Doctrine\Common\Annotations\Annotation\Target;
 use Doctrine\Common\Annotations\Annotation\Attribute;
 use Doctrine\Common\Annotations\Annotation\Attributes;
+use Swoft\Stdlib\Helper\Str;
 
 /**
  * The annotation of command mapping
@@ -34,6 +35,13 @@ final class CommandMapping
     private $alias = '';
 
     /**
+     * The command description message text
+     *
+     * @var string
+     */
+    private $desc = 'no description message';
+
+    /**
      * Mapping constructor.
      *
      * @param array $values
@@ -48,6 +56,10 @@ final class CommandMapping
 
         if (isset($values['alias'])) {
             $this->alias = (string)$values['alias'];
+        }
+
+        if (isset($values['desc'])) {
+            $this->desc = (string)$values['desc'];
         }
     }
 
@@ -65,5 +77,21 @@ final class CommandMapping
     public function getAlias(): string
     {
         return $this->alias;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getAliases(): array
+    {
+        return Str::explode($this->alias);
+    }
+
+    /**
+     * @return string
+     */
+    public function getDesc(): string
+    {
+        return $this->desc;
     }
 }
