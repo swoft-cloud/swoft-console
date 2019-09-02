@@ -48,9 +48,9 @@ class Title extends MessageFormatter
         if ($tLength >= $width) {
             $titleIndent = Str::pad(self::CHAR_SPACE, $indent, self::CHAR_SPACE);
         } elseif ($opts['titlePos'] === self::POS_RIGHT) {
-            $titleIndent = Str::pad(self::CHAR_SPACE, ceil($width - $tLength) + $indent, self::CHAR_SPACE);
+            $titleIndent = Str::pad(self::CHAR_SPACE, (int)ceil($width - $tLength) + $indent, self::CHAR_SPACE);
         } elseif ($opts['titlePos'] === self::POS_MIDDLE) {
-            $titleIndent = Str::pad(self::CHAR_SPACE, ceil(($width - $tLength) / 2) + $indent, self::CHAR_SPACE);
+            $titleIndent = Str::pad(self::CHAR_SPACE, (int)ceil(($width - $tLength) / 2) + $indent, self::CHAR_SPACE);
         } elseif ($indent > 0){
             $titleIndent = Str::pad(self::CHAR_SPACE, $indent, self::CHAR_SPACE);
         }
